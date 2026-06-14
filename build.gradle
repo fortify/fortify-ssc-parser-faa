@@ -1,0 +1,75 @@
+buildscript {
+    configurations.all {
+        resolutionStrategy.dependencySubstitution {
+            substitute module("com.overzealous:remark:1.1.0") using module("com.wavefront:remark:2023-07.07") because "not available on maven central anymore"
+        }
+    }
+}
+
+plugins {
+  id "io.freefair.lombok" version "8.13.1"
+  id 'com.github.jk1.dependency-license-report' version '2.1'
+  id "org.kordamp.gradle.markdown" version "2.2.0"
+}
+
+group 'com.fortify.ssc.parser.fortifyaa'
+ext.getVersion = {
+	def result = project.findProperty('version');
+	return !result || result=='unspecified' ? file('version.txt').text.trim() : result;
+}
+version = ext.getVersion();
+ext.sscParserPluginVersion = project.version
+
+ext {
+	gradleHelpersLocation = "https://raw.githubusercontent.com/fortify-ps/gradle-helpers/1.8"
+}
+
+apply from: "${gradleHelpersLocation}/repo-helper.gradle"
+apply from: "${gradleHelpersLocation}/junit-helper.gradle"
+apply from: "${gradleHelpersLocation}/ssc-parser-plugin-helper.gradle"
+apply from: "${gradleHelpersLocation}/thirdparty-helper.gradle"
+apply from: "${gradleHelpersLocation}/markdown2html.gradle"
+
+apply plugin: 'java'
+sourceCompatibility = 1.8
+
+sourceSets {
+    test {
+        resources {
+            srcDir "sampleData"
+        }
+    }
+}
+
+configurations.all {
+    // Don't cache modules that may change (i.e. snapshots)
+	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+dependencies {
+	implementationExport(group: 'org.mapdb', name: 'mapdb', version: '3.0.10') { transitive = true }
+    implementationExport(group: 'com.fortify.ssc.parser.util', name: 'fortify-ssc-parser-util-json', version:'1.7.1.RELEASE', changing: false) { transitive = true }
+    implementationExport(group: 'org.commonmark', name: 'commonmark', version: '0.22.0') { transitive = true }
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
+}
+
+task copyMarkdown(type: Copy) {
+	from("${projectDir}") {
+		include "USAGE.md"
+	}
+	into "${m2hSourceDir}"
+}
+
+task dist(type: Zip) {
+	dependsOn 'build', 'markdownToHtml'
+	archiveFileName = "${rootProject.name}-${project.version}.zip"
+	destinationDirectory = file("$buildDir/dist")
+	from("${buildDir}/${libsDirName}") {
+		include "${rootProject.name}-${project.version}.jar"
+	}
+	from "${m2hOutputDir}"
+	from("${projectDir}") {
+		include "sampleData/**/*"
+		include "LICENSE.txt"
+	}
+}

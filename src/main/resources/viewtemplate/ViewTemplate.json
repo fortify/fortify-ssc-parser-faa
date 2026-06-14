@@ -1,0 +1,66 @@
+[
+	[
+		{
+			"type": "template",
+			"title": "Issue Info",
+			"templateId": "TITLEBOX",
+			"items": [
+				{
+					"type": "template",
+					"title": "File",
+					"key": "fullFileName",
+					"templateId": "SIMPLE",
+					"dataType": "string"
+				},
+				{
+					"type": "template",
+					"title": "Line",
+					"key": "lineNumber",
+					"templateId": "SIMPLE",
+					"dataType": "string"
+				},
+				{
+					"type": "template",
+					"title": "Category",
+					"key": "customAttributes.categoryAndSubCategory",
+					"templateId": "SIMPLE",
+					"dataType": "string"
+				},
+				{
+					"type": "template",
+					"title": "Priority",
+					"key": "friority",
+					"templateId": "SIMPLE",
+					"dataType": "string"
+				},
+				{
+					"type": "template",
+					"title": "Summary",
+					"key": "customAttributes.summary",
+					"templateId": "SIMPLE",
+					"dataType": "string"
+				},
+				{
+					"type": "template",
+					"title": "Remediation",
+					"key": "customAttributes.remediationSummary",
+					"templateId": "SIMPLE",
+					"dataType": "string"
+				}
+			]
+		}
+	],
+	[
+		{
+			"type": "template",
+			"title": "Details",
+			"key": "brief",
+			"templateId": "COLLAPSE",
+			"dataType": "string",
+			"fieldHtmlStyle": {
+				"font-size": "14px",
+				"line-height": "1.5"
+			}
+		}
+	]
+]

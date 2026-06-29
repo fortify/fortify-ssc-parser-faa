@@ -25,13 +25,12 @@
 package com.fortify.ssc.parser.fortifyaa.domain;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.mapdb.DB;
-import org.mapdb.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,36 +58,32 @@ public final class RunData {
 	@Getter private String toolName;
 	
 	/**
-	 * Private constructor; instances can be created through the {@link #parseRunData(DB, ExtendedJsonParser)}
+	 * Private constructor; instances can be created through the {@link #parseRunData(ExtendedJsonParser)}
 	 * method.
-	 * 
-	 * @param db
 	 */
-	@SuppressWarnings("unchecked")
-    private RunData(final DB db) {
-		// We assume there's only a limited set of URI base id's, so store in memory
+    private RunData() {
+		// Auxiliary run metadata is held in memory. Rules (Fortify Categories) are a bounded
+		// set, and the artifacts list scales with the number of referenced files rather than
+		// the number of findings. The potentially large results array is never buffered here:
+		// only its Region is captured and it is streamed in a second pass (see
+		// VulnerabilitiesParser#parseResults), so only this bounded metadata lives on the heap.
 		this.originalUriBaseIds = new HashMap<>();
-		// We assume large scans may include a lot of artifacts and rules, so we use disk-backed collections.
-		// Note that alternatively we could use a hash & position-based approach like the SARIF .NET SDK
-		// (see DeferredDictionary and DeferredList) to avoid serializing entries to disk, but for now
-		// disk-backed collections seem to perform well and the implementation is much easier to understand.
-		this.artifactsByIndex = (List<Artifact>) db.indexTreeList("artifactsByIndex", Serializer.JAVA).create();
-		this.ruleIndexesById = db.hashMap("ruleIndexesById", Serializer.STRING, Serializer.INTEGER).create();
-		this.ruleIndexesByGuid = db.hashMap("ruleIndexesByGuid", Serializer.STRING, Serializer.INTEGER).create();
-		this.rulesByIndex = (List<ReportingDescriptor>) db.indexTreeList("rulesByIndex", Serializer.JAVA).create();
+		this.artifactsByIndex = new ArrayList<>();
+		this.ruleIndexesById = new HashMap<>();
+		this.ruleIndexesByGuid = new HashMap<>();
+		this.rulesByIndex = new ArrayList<>();
 	}
-	
+
 	/**
 	 * This method parses auxiliary data from a SARIF <code>run</code> object;
 	 * the returned {@link RunData} object provides access to this auxiliary data.
-	 * 
-	 * @param db used to temporarily store some data in disk-backed collections
+	 *
 	 * @param jsonParser pointing at a <code>run</code> entry in the SARIF <code>runs</code> array
 	 * @return {@link RunData} instance
 	 * @throws IOException
 	 */
-	public static final RunData parseRunData(final DB db, final ExtendedJsonParser jsonParser) throws IOException {
-		RunData runData = new RunData(db);
+	public static final RunData parseRunData(final ExtendedJsonParser jsonParser) throws IOException {
+		RunData runData = new RunData();
 		new StreamingJsonParser()
 			.handler("/originalUriBaseIds/*", runData::addOriginalUriBaseId)
 			.handler("/artifacts/*", Artifact.class, runData::addArtifact)

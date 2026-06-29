@@ -2,9 +2,6 @@ package com.fortify.ssc.parser.fortifyaa.parser;
 
 import java.io.IOException;
 
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fortify.plugin.api.ScanData;
@@ -81,13 +78,8 @@ public final class VulnerabilitiesParser {
 	 * @throws IOException
 	 */
 	private final void parseRun(ExtendedJsonParser jsonParser) throws IOException {
-		try ( DB db = DBMaker.tempFileDB()
-				.closeOnJvmShutdown().fileDeleteAfterClose()
-				.fileMmapEnableIfSupported()
-				.make() ) {
-			RunData runData = RunData.parseRunData(db, jsonParser);
-			parseResults(runData);
-		}
+		RunData runData = RunData.parseRunData(jsonParser);
+		parseResults(runData);
 	}
 	
 	/**

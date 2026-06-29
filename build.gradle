@@ -44,6 +44,11 @@ sourceSets {
 configurations.all {
     // Don't cache modules that may change (i.e. snapshots)
 	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+
+	// CVE-2024-47554: commons-io before 2.14.0 (pinned to 2.13.0 by the
+	// fortify-ssc-parser-util BOM) has an uncontrolled-resource-consumption flaw
+	// in XmlStreamReader. Force a fixed version over the BOM constraint.
+	resolutionStrategy.force 'commons-io:commons-io:2.22.0'
 }
 
 dependencies {

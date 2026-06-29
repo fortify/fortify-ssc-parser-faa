@@ -49,6 +49,11 @@ configurations.all {
 	// fortify-ssc-parser-util BOM) has an uncontrolled-resource-consumption flaw
 	// in XmlStreamReader. Force a fixed version over the BOM constraint.
 	resolutionStrategy.force 'commons-io:commons-io:2.22.0'
+
+	// CVE-2025-48924: commons-lang3 before 3.18.0 (pinned to 3.13.0 by the
+	// fortify-ssc-parser-util BOM) has an uncontrolled-recursion flaw in
+	// ClassUtils.getClass. Force a fixed version over the BOM constraint.
+	resolutionStrategy.force 'org.apache.commons:commons-lang3:3.20.0'
 }
 
 dependencies {

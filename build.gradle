@@ -54,6 +54,14 @@ configurations.all {
 	// fortify-ssc-parser-util BOM) has an uncontrolled-recursion flaw in
 	// ClassUtils.getClass. Force a fixed version over the BOM constraint.
 	resolutionStrategy.force 'org.apache.commons:commons-lang3:3.20.0'
+
+	// GHSA-72hv-8253-57qq: jackson-core async parser bypasses maxNumberLength.
+	// Pinned to 2.15.2 by the fortify-ssc-parser-util / jackson BOM. Force all
+	// jackson modules together (they must share a version) to a fixed release.
+	// Note: jackson-annotations uses a shorter version scheme (2.22, not 2.22.0).
+	resolutionStrategy.force 'com.fasterxml.jackson.core:jackson-core:2.22.0',
+		'com.fasterxml.jackson.core:jackson-databind:2.22.0',
+		'com.fasterxml.jackson.core:jackson-annotations:2.22'
 }
 
 dependencies {

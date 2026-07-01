@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/fortify/fortify-ssc-parser-faa/compare/v1.0.0...v1.0.1) (2026-07-01)
+
+
+### Bug Fixes
+
+* align example.sarif with FAA 26.4-preview1 output ([43dac75](https://github.com/fortify/fortify-ssc-parser-faa/commit/43dac75476464460369b9540a98f3a79d87121d9))
+
 ## 1.0.0 (2026-06-29)
 
 

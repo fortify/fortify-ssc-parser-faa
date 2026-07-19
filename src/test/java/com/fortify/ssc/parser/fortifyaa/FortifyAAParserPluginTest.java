@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -90,6 +91,11 @@ class FortifyAAParserPluginTest {
 			@Override
 			public InputStream getInputStream(ScanEntry scanEntry) throws IOException {
 				return supplier.get();
+			}
+
+			@Override
+			public URL getUrl(ScanEntry scanEntry) {
+				return null; // test data is stream-backed, never URL-backed
 			}
 		};
 	}

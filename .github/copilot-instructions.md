@@ -85,6 +85,7 @@ keep standard SARIF fields intact when changing parsing logic:
   `CHANGELOG.md` are managed by the release tooling; the production-release
   workflow builds and attaches the plugin jar. Use conventional commit messages
   (`fix:`, `feat:`, `docs:`, `chore:`, `ci:`, `feat!:` / `BREAKING-CHANGE:`).
+  See "Versioning & manifest policy" below for how versions land in `plugin.xml`.
 - **Build:** `./gradlew clean build` (tests included); `./gradlew dist
   distThirdParty` for the distributable plugin jar + third-party bundle. The
   plugin version is read from `version.txt` (overridable with `-Pversion=x.y.z`).
@@ -92,3 +93,29 @@ keep standard SARIF fields intact when changing parsing logic:
   `.github/copilot-instructions.md` (this file) and standard Copilot locations
   (`.github/instructions/**`). This is the single canonical source; point other
   assistants here rather than keeping a separate copy.
+
+## Versioning & manifest policy (`plugin.xml`)
+
+- **Manifest schema:** use **pluginmanifest-1.1** (the latest — there is no 1.2).
+  We want 1.1 specifically for `<parser-type>STATIC</parser-type>`, which 1.0 lacks.
+- **Plugin version** (`<version>`): automatic semantic versioning via release-please,
+  deliberately **not** aligned with FAA's OpenText `[yy].[Q].[patch]` scheme. The
+  build substitutes it into the `<!--VERSION-->` marker. The manifest's
+  `PluginVersion` type allows **dotted digits only** (up to 4 groups, max 25 chars —
+  no `-preview`-style suffixes), which plain `x.y.z` satisfies.
+- **`api-version`:** never hardcode. The build derives it from the
+  `com.fortify.plugin:plugin-api` dependency actually resolved on the compile
+  classpath (declared explicitly in `build.gradle`, overriding the older pin from
+  the shared `ssc-parser-plugin-helper`) and substitutes it into `plugin.xml`,
+  truncated to `major.minor` to fit the manifest's `ApiVersion` pattern
+  `(\d{1,2})(\.\d{1,4}){0,2}` (max 8 chars).
+- **`data-version`:** an integer; increase it by exactly 1 whenever the FAA SARIF
+  data format changes (or the plugin starts producing different data from the same
+  input).
+- **`supported-engine-versions`:** deliberately omitted. It is optional per the
+  schema, SSC does not act on it, and FAA's release labels (e.g. `26.4-preview3`)
+  cannot be expressed in its numeric range pattern.
+- **FAA ↔ plugin version relationships:** whenever a plugin version or data version
+  is tied to specific FAA versions, document that relationship in
+  `plugin-info/description` in `plugin.xml` (e.g. "Data version 6 corresponds to
+  the SARIF data format produced by FAA 26.4-preview3 and later").

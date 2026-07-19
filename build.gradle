@@ -65,9 +65,39 @@ configurations.all {
 }
 
 dependencies {
+    // SSC plugin API: the shared ssc-parser-plugin-helper pins an old 1.0.1.1; declare the
+    // latest public release explicitly so Gradle's conflict resolution picks it everywhere.
+    // The manifest's api-version is derived from whatever actually resolves here (see below).
+    implementation 'com.fortify.plugin:plugin-api:1.2.2320.0'
     implementationExport(group: 'com.fortify.ssc.parser.util', name: 'fortify-ssc-parser-util-json', version:'1.7.1.RELEASE', changing: false) { transitive = true }
     implementationExport(group: 'org.commonmark', name: 'commonmark', version: '0.22.0') { transitive = true }
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
+}
+
+/*
+ Derive the manifest api-version from the plugin-api dependency actually resolved on the
+ compile classpath, rather than hardcoding it in plugin.xml. The manifest's ApiVersion type
+ only allows up to three dotted groups of 1-4 digits (max 8 chars), which the full artifact
+ version (e.g. 1.2.2320.0) exceeds -- so truncate to major.minor.
+*/
+ext.pluginApiVersion = {
+	def id = configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts
+		.collect { it.moduleVersion.id }
+		.find { it.group == 'com.fortify.plugin' && it.name == 'plugin-api' }
+	if (id == null) throw new GradleException('com.fortify.plugin:plugin-api not found on compileClasspath')
+	def m = id.version =~ /^\d{1,2}\.\d{1,4}/
+	if (!m.find()) throw new GradleException("Cannot derive manifest api-version from plugin-api version '${id.version}'")
+	return m.group()
+}
+
+jar {
+	// Replace the api-version placeholder in plugin.xml, analogous to the helper's
+	// <!--VERSION--> substitution of the plugin version.
+	filesMatching('plugin.xml') {
+		filter {
+			it.replaceAll('api-version="[^"]*"', 'api-version="' + pluginApiVersion() + '"')
+		}
+	}
 }
 
 task copyMarkdown(type: Copy) {

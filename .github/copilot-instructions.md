@@ -55,8 +55,9 @@ The plugin consumes the fixed, predictable shape of FAA's SARIF output:
 - Stable dedup via `fingerprints["fortify/instance-id"]`.
 - One canonical sink location; the display snippet comes from `contextRegion`
   (its own `startLine` numbers the gutter), falling back to `region.snippet` +
-  the legacy `snippetStartLine` property for pre-26.4 files; no `codeFlows` /
-  `threadFlows`.
+  the legacy `snippetStartLine` property for pre-26.4 files. FAA also emits a
+  single-step `codeFlow` (FoD display plumbing) — this plugin deliberately
+  ignores `codeFlows`.
 - Issue detail in SSC renders as Jsoup-sanitized HTML; the view template lives in
   `src/main/resources/viewtemplate/ViewTemplate.json`.
 

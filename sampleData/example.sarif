@@ -140,6 +140,33 @@
               }
             }
           ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": { "text": "Sink (line 44)" },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "src/main/java/com/example/insecureforum/web/AuthenticationFilter.java"
+                          },
+                          "region": {
+                            "startLine": 39,
+                            "endLine": 49,
+                            "snippet": {
+                              "text": "    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {\n        HttpServletRequest httpReq = (HttpServletRequest)request;\n        HttpServletResponse httpResp = (HttpServletResponse)response;\n        String path = httpReq.getServletPath();\n        Cookie[] cookies = httpReq.getCookies();\n        boolean loggedIn = cookies != null && stream(cookies).anyMatch(c -> \"user\".equals(c.getName()));\n        httpReq.setAttribute(\"loggedIn\", loggedIn);\n        if(whitelist.test(path)) {\n            logger.debug(\"Path {} matches whitelist, allowing\", path);\n            chain.doFilter(request, response);\n        } else {"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
           "fingerprints": {
             "fortify/instance-id": "3DD14DE38594C51AEAB9A46DF2EB085F"
           },
@@ -186,6 +213,33 @@
                   }
                 }
               }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": { "text": "Sink (line 30)" },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "src/main/webapp/WEB-INF/views/messages/read.jsp"
+                          },
+                          "region": {
+                            "startLine": 25,
+                            "endLine": 35,
+                            "snippet": {
+                              "text": "                        </article>\n                        <article>\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        ${msg.body}\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                    </div>"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "fingerprints": {

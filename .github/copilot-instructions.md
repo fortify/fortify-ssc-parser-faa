@@ -44,13 +44,19 @@ to sibling folders or the analyzer's internal docs.
 
 The plugin consumes the fixed, predictable shape of FAA's SARIF output:
 
-- SARIF **rules = Fortify Categories** (carrying `Kingdom` / optional `Subtype`
-  taxonomy metadata); **results = specific findings**, with finding detail in
-  `result.message.text` and `result.properties.remediation`.
-- Severity is read from `result.properties["fortify-severity"]` (authoritative
-  for SSC), in addition to the SARIF `level`.
+- SARIF **rules are synthetic and per-instance** (1:1 with results; the rule id is
+  the category slug + instance id). Rules carry the Fortify taxonomy metadata:
+  `kingdom` / optional `SubType` — that is FAA's casing since 26.4; the plugin
+  falls back to the legacy `Kingdom` / `Subtype` for older files. Finding detail
+  is in `result.message.text`/`markdown` and `result.properties.remediation`.
+- Priority derives from `result.properties` `impact`/`likelihood` (quadrant);
+  `result.properties["fortify-severity"]` is the top-precedence fallback, ahead
+  of `priority`, the rule's `security-severity`, and the SARIF `level`.
 - Stable dedup via `fingerprints["fortify/instance-id"]`.
-- One canonical sink location with a short snippet; no `codeFlows` / `threadFlows`.
+- One canonical sink location; the display snippet comes from `contextRegion`
+  (its own `startLine` numbers the gutter), falling back to `region.snippet` +
+  the legacy `snippetStartLine` property for pre-26.4 files; no `codeFlows` /
+  `threadFlows`.
 - Issue detail in SSC renders as Jsoup-sanitized HTML; the view template lives in
   `src/main/resources/viewtemplate/ViewTemplate.json`.
 

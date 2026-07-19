@@ -25,10 +25,55 @@
 package com.fortify.ssc.parser.fortifyaa.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class ResultTest {
+	private static final ObjectMapper MAPPER = new ObjectMapper();
+
+	private Result result(String json) throws Exception {
+		return MAPPER.readValue(json, Result.class);
+	}
+
+	@Test
+	void testResolveSnippetFromContextRegion() throws Exception {
+		// Current FAA encoding: region = the sink line, contextRegion = the window.
+		Result result = result("{\"locations\":[{\"physicalLocation\":{"
+				+ "\"region\":{\"startLine\":21,\"endLine\":21,\"snippet\":{\"text\":\"sink line\"}},"
+				+ "\"contextRegion\":{\"startLine\":16,\"endLine\":26,\"snippet\":{\"text\":\"window\\nsink line\\nmore\"}}}}]}");
+		assertEquals("window\nsink line\nmore", result.resolveSnippet());
+		assertEquals(16, result.resolveContextRegionStartLine());
+		assertEquals(21, result.resolveLineNumber());
+	}
+
+	@Test
+	void testResolveSnippetLegacyRegionWindow() throws Exception {
+		// Legacy FAA encoding: region.snippet is the window; no contextRegion.
+		Result result = result("{\"locations\":[{\"physicalLocation\":{"
+				+ "\"region\":{\"startLine\":21,\"snippet\":{\"text\":\"window\\nsink line\\nmore\"}}}}]}");
+		assertEquals("window\nsink line\nmore", result.resolveSnippet());
+		assertNull(result.resolveContextRegionStartLine());
+	}
+
+	@Test
+	void testResolveSnippetSingleLineRegionWithoutContext() throws Exception {
+		// Current encoding at a one-line file: no contextRegion (it must be a proper superset).
+		Result result = result("{\"locations\":[{\"physicalLocation\":{"
+				+ "\"region\":{\"startLine\":3,\"endLine\":3,\"snippet\":{\"text\":\"sink line\"}}}}]}");
+		assertEquals("sink line", result.resolveSnippet());
+		assertNull(result.resolveContextRegionStartLine());
+		assertEquals(3, result.resolveLineNumber());
+	}
+
+	@Test
+	void testResolveSnippetAbsent() throws Exception {
+		Result result = result("{\"locations\":[{\"physicalLocation\":{\"region\":{\"startLine\":3}}}]}");
+		assertNull(result.resolveSnippet());
+		assertNull(result.resolveContextRegionStartLine());
+	}
 	@Test
 	void testReplaceLinks() {
 		assertEquals("Prohibited term used in para[0]\\spans[2].", 

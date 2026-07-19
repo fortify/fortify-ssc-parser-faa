@@ -153,13 +153,23 @@ public final class VulnerabilitiesProducer {
 	}
 
 	// Render the code snippet as a monospaced <pre><code> block with right-aligned
-	// line numbers (when snippetStartLine is provided) and the affected line in
-	// bold. Returns "" when there is no snippet.
+	// line numbers and the affected line in bold. Returns "" when there is no snippet.
 	private String getSnippetHtml(Result result) {
 		String snippet = result.resolveSnippet();
 		if ( StringUtils.isBlank(snippet) ) { return ""; }
 		snippet = StringUtils.stripEnd(snippet, "\n");
-		Integer snippetStartLine = getIntegerProperty(result.getProperties(), "snippetStartLine");
+		// First line number of the snippet, in precedence order: the contextRegion's own
+		// startLine (standard encoding, FAA 26.4+), the legacy non-standard
+		// snippetStartLine property (pre-26.4 FAA windows), the region's startLine (a
+		// region snippet spans the region per the SARIF spec). Without any, render
+		// without a line-number gutter.
+		Integer snippetStartLine = result.resolveContextRegionStartLine();
+		if ( snippetStartLine == null ) {
+			snippetStartLine = getIntegerProperty(result.getProperties(), "snippetStartLine");
+		}
+		if ( snippetStartLine == null ) {
+			snippetStartLine = result.resolveLineNumber();
+		}
 		if ( snippetStartLine == null ) {
 			return "<pre><code>" + escapeHtml(snippet) + "</code></pre>";
 		}
@@ -245,8 +255,14 @@ public final class VulnerabilitiesProducer {
 			getVulnerabilityAbstract(runData, result));
 	}
 	
+	// FAA emits FoD's expected (case-sensitive) property casing since 26.4: rule-level
+	// "kingdom" (lowercase) and "SubType". The capitalized variants are read as
+	// fallbacks so pre-26.4 SARIFs keep parsing.
 	private String getKingdom(RunData runData, Result result) {
 		String kingdom = getStringProperty(result.getProperties(), "kingdom", null);
+		if ( StringUtils.isBlank(kingdom) ) {
+			kingdom = getStringProperty(getRuleProperties(runData, result), "kingdom", null);
+		}
 		if ( StringUtils.isBlank(kingdom) ) {
 			kingdom = getStringProperty(getRuleProperties(runData, result), "Kingdom", null);
 		}
@@ -281,7 +297,11 @@ public final class VulnerabilitiesProducer {
 	}
 	
 	private String getSubCategory(RunData runData, Result result) {
-		return getStringProperty(getRuleProperties(runData, result), "Subtype", null);
+		String subCategory = getStringProperty(getRuleProperties(runData, result), "SubType", null);
+		if ( StringUtils.isBlank(subCategory) ) {
+			subCategory = getStringProperty(getRuleProperties(runData, result), "Subtype", null);
+		}
+		return subCategory;
 	}
 	
 	private String getAnalyzer(RunData runData, Result result) {

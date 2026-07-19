@@ -91,13 +91,39 @@ public final class Result {
 		return value;
 	}
 	
+	// The snippet to display: the contextRegion window when present (the standard SARIF
+	// encoding FAA uses since 26.4 — region.snippet is then just the sink line), falling
+	// back to the region snippet (pre-26.4 FAA windows and generic SARIF).
 	public String resolveSnippet() {
+		Region contextRegion = resolveContextRegionWithSnippet();
+		if ( contextRegion!=null ) {
+			return contextRegion.getSnippet().getText();
+		}
 		String value = null;
 		Location[] locations = getLocations();
 		if ( locations!=null && locations.length>0 && locations[0].getPhysicalLocation()!=null && locations[0].getPhysicalLocation().getRegion()!=null && locations[0].getPhysicalLocation().getRegion().getSnippet()!=null ) {
 			value = locations[0].getPhysicalLocation().getRegion().getSnippet().getText();
 		}
 		return value;
+	}
+
+	// First line number of the snippet returned by resolveSnippet(), when that snippet
+	// came from the contextRegion; null otherwise (callers then fall back to the legacy
+	// snippetStartLine property / the region's own startLine).
+	public Integer resolveContextRegionStartLine() {
+		Region contextRegion = resolveContextRegionWithSnippet();
+		return contextRegion==null ? null : contextRegion.getStartLine();
+	}
+
+	private Region resolveContextRegionWithSnippet() {
+		Location[] locations = getLocations();
+		if ( locations!=null && locations.length>0 && locations[0].getPhysicalLocation()!=null ) {
+			Region contextRegion = locations[0].getPhysicalLocation().getContextRegion();
+			if ( contextRegion!=null && contextRegion.getSnippet()!=null && StringUtils.isNotBlank(contextRegion.getSnippet().getText()) ) {
+				return contextRegion;
+			}
+		}
+		return null;
 	}
 
 	public ReportingDescriptor resolveRule(RunData runData) {

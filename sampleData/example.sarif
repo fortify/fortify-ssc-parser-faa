@@ -114,8 +114,8 @@
           "ruleId": "often-misused/authentication/3DD14DE38594C51AEAB9A46DF2EB085F",
           "level": "error",
           "message": {
-            "text": "AuthenticationFilter determines login state solely by the presence of a cookie named \"user\". Cookies are client-controlled and unsigned, so an attacker can set user=anything to bypass authentication and access all non-whitelisted paths. Related flow: AuthenticationController.login() sets this cookie; MessageController reads it as the message author identity.",
-            "markdown": "`AuthenticationFilter` decides login state **solely from the presence of a cookie named `user`**. Cookies are client-controlled and unsigned, so an attacker can simply send `Cookie: user=admin` to bypass authentication and reach every non-whitelisted path.\n\n**Exploit flow**\n\n1. `AuthenticationController.login()` sets the `user` cookie on success.\n2. `AuthenticationFilter.doFilter()` treats the mere presence of that cookie as proof of authentication.\n3. `MessageController` trusts the same cookie as the message author identity, enabling impersonation."
+            "text": "Login state is decided solely by the presence of an unsigned, client-controlled 'user' cookie, so anyone can forge it to bypass authentication.",
+            "markdown": "Login state is decided solely by the presence of an unsigned, client-controlled 'user' cookie, so anyone can forge it to bypass authentication."
           },
           "locations": [
             {
@@ -180,17 +180,15 @@
             "impact": 4.0,
             "likelihood": 4.0,
             "fortify-severity": "Critical",
-            "summary": "Login state is decided solely by the presence of an unsigned, client-controlled 'user' cookie, so anyone can forge it to bypass authentication.",
-            "remediationSummary": "Track the authenticated user in a server-side HttpSession instead of trusting a client-side cookie.",
-            "remediation": "Stop trusting a client-side cookie as the authentication state; use a real server-side session instead:\n\n1. In `AuthenticationController.login()`, after verifying credentials, store the user server-side: `request.getSession().setAttribute(\"user\", username)`.\n2. In `AuthenticationFilter.doFilter()`, derive `loggedIn` from `session.getAttribute(\"user\") != null` rather than cookie presence.\n3. Remove the client-visible `user` cookie entirely so it can no longer be forged.\n\nSee the [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)."
+            "remediationSummary": "Track the authenticated user in a server-side HttpSession instead of trusting a client-side cookie."
           }
         },
         {
           "ruleId": "cross-site-scripting/persistent/CFE4E750668A04EB465124ADB05C2FD8",
           "level": "error",
           "message": {
-            "text": "User-supplied message body is stored via MessageDAO.post() (raw SQL INSERT, no sanitization) and later rendered unescaped in read.jsp through ${msg.body}. Attacker-controlled HTML and JavaScript persists in the database and executes in every viewer's browser session.",
-            "markdown": "User-supplied message body is stored via `MessageDAO.post()` (raw SQL `INSERT`, no sanitization) and later rendered **unescaped** in `read.jsp` via `${msg.body}`. Any HTML or JavaScript an author submits is persisted and then executes in **every** viewer's browser.\n\nExploitation requires an authenticated account that can post a message, which lowers the likelihood somewhat, but a single stored payload then affects all readers."
+            "text": "User-submitted message bodies are stored unsanitized and rendered unescaped in read.jsp, so injected scripts persist and execute for every viewer.",
+            "markdown": "User-submitted message bodies are stored unsanitized and rendered unescaped in read.jsp, so injected scripts persist and execute for every viewer."
           },
           "locations": [
             {
@@ -255,9 +253,7 @@
             "impact": 4.0,
             "likelihood": 2.0,
             "fortify-severity": "High",
-            "summary": "User-submitted message bodies are stored unsanitized and rendered unescaped in read.jsp, so injected scripts persist and execute for every viewer.",
-            "remediationSummary": "HTML-encode output (e.g. JSTL c:out) and sanitize input with an allowlist before storing.",
-            "remediation": "Encode on output and sanitize on input:\n\n- In `read.jsp`, replace `${msg.body}` with `<c:out value=\"${msg.body}\"/>` so the value is HTML-encoded. Add `<%@ taglib prefix=\"c\" uri=\"http://java.sun.com/jsp/jstl/core\" %>` if it is not already imported.\n- In `MessageDAO.post()`, sanitize incoming HTML with an allowlist library such as the [OWASP Java HTML Sanitizer](https://github.com/OWASP/java-html-sanitizer) before persisting."
+            "remediationSummary": "HTML-encode output (e.g. JSTL c:out) and sanitize input with an allowlist before storing."
           }
         }
       ]

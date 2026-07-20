@@ -47,8 +47,12 @@ The plugin consumes the fixed, predictable shape of FAA's SARIF output:
 - SARIF **rules are synthetic and per-instance** (1:1 with results; the rule id is
   the category slug + instance id). Rules carry the Fortify taxonomy metadata:
   `kingdom` / optional `SubType` — that is FAA's casing since 26.4; the plugin
-  falls back to the legacy `Kingdom` / `Subtype` for older files. Finding detail
-  is in `result.message.text`/`markdown` and `result.properties.remediation`.
+  falls back to the legacy `Kingdom` / `Subtype` for older files.
+- **Content channels (since FAA 26.4):** `result.message` is the one-line summary;
+  the description is `rule.fullDescription` and the remediation is `rule.help`
+  (markdown members preferred — the text members may be FoD-shaped HTML). Legacy
+  fallbacks keep pre-26.4 files parsing: `message.markdown` as the description,
+  and the `summary` / `remediation` result properties.
 - Priority derives from `result.properties` `impact`/`likelihood` (quadrant);
   `result.properties["fortify-severity"]` is the top-precedence fallback, ahead
   of `priority`, the rule's `security-severity`, and the SARIF `level`.

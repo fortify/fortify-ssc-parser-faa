@@ -121,11 +121,19 @@ public final class VulnerabilitiesProducer {
 		return StringUtils.defaultIfBlank(result.getResultMessage(runData), "Not Available");
 	}
 
-	// Rich description: prefer the SARIF message markdown, fall back to the
-	// resolved plain-text message. Rendered to (whitelisted) HTML for SSC.
+	// Rich description: prefer the per-instance rule's fullDescription markdown — the
+	// description's only carrier since FAA 26.4 (the result message is just the
+	// one-line summary there). Fall back to the channels that carried the description
+	// in pre-26.4 files: message markdown, then the resolved plain-text message.
+	// Rendered to (whitelisted) HTML for SSC.
 	private String getDescriptionHtml(RunData runData, Result result) {
-		String markdown = result.getMessage()==null ? null : result.getMessage().getMarkdown();
-		String source = StringUtils.isNotBlank(markdown) ? markdown : result.getResultMessage(runData);
+		String source = getRuleFullDescriptionMarkdown(runData, result);
+		if ( StringUtils.isBlank(source) ) {
+			source = result.getMessage()==null ? null : result.getMessage().getMarkdown();
+		}
+		if ( StringUtils.isBlank(source) ) {
+			source = result.getResultMessage(runData);
+		}
 		String html = MarkdownUtil.toHtml(source);
 		return StringUtils.isBlank(html) ? "Not Available" : html;
 	}
@@ -145,7 +153,13 @@ public final class VulnerabilitiesProducer {
 			  .append(line != null ? " (line " + line + ")" : "")
 			  .append("</strong></p>").append(snippet);
 		}
-		String remediationHtml = MarkdownUtil.toHtml(getStringProperty(result.getProperties(), "remediation", null));
+		// Remediation carrier since FAA 26.4: rule.help markdown; the legacy
+		// "remediation" result property is read as a fallback for pre-26.4 files.
+		String remediation = getRuleHelpMarkdown(runData, result);
+		if ( StringUtils.isBlank(remediation) ) {
+			remediation = getStringProperty(result.getProperties(), "remediation", null);
+		}
+		String remediationHtml = MarkdownUtil.toHtml(remediation);
 		if ( StringUtils.isNotBlank(remediationHtml) ) {
 			sb.append("<p><strong>Remediation</strong></p>").append(remediationHtml);
 		}
@@ -417,10 +431,15 @@ public final class VulnerabilitiesProducer {
 		return StringUtils.isBlank(subCategory) ? category : String.join(": ", category, subCategory);
 	}
 
-	// Short (<=255 char) one-line description for the Issue Details panel.
-	// Prefers an analyzer-provided summary; falls back to the (truncated) message.
+	// Short (<=255 char) one-line description for the Issue Details panel. Since FAA
+	// 26.4 the result message IS the one-line summary; its markdown member is
+	// preferred because the text member may be FoD-shaped HTML. The legacy "summary"
+	// result property is read first so pre-26.4 files keep their behavior.
 	private String getSummary(RunData runData, Result result) {
 		String summary = getStringProperty(result.getProperties(), "summary", null);
+		if ( StringUtils.isBlank(summary) ) {
+			summary = result.getMessage()==null ? null : result.getMessage().getMarkdown();
+		}
 		if ( StringUtils.isBlank(summary) ) {
 			summary = result.getResultMessage(runData);
 		}
@@ -428,13 +447,29 @@ public final class VulnerabilitiesProducer {
 	}
 
 	// Short (<=255 char) remediation summary for the Issue Details panel.
-	// Prefers an analyzer-provided summary; falls back to the (truncated) remediation.
+	// Prefers an analyzer-provided summary; falls back to the (truncated) remediation
+	// (legacy "remediation" property for pre-26.4 files, rule.help markdown since 26.4).
 	private String getRemediationSummary(RunData runData, Result result) {
 		String summary = getStringProperty(result.getProperties(), "remediationSummary", null);
 		if ( StringUtils.isBlank(summary) ) {
 			summary = getStringProperty(result.getProperties(), "remediation", null);
 		}
+		if ( StringUtils.isBlank(summary) ) {
+			summary = getRuleHelpMarkdown(runData, result);
+		}
 		return truncateToMax(summary, 255);
+	}
+
+	// The description/remediation carriers since FAA 26.4: the per-instance rule's
+	// fullDescription/help markdown members (the text members may be FoD-shaped HTML).
+	private String getRuleFullDescriptionMarkdown(RunData runData, Result result) {
+		ReportingDescriptor rule = result.resolveRule(runData);
+		return rule==null || rule.getFullDescription()==null ? null : rule.getFullDescription().getMarkdown();
+	}
+
+	private String getRuleHelpMarkdown(RunData runData, Result result) {
+		ReportingDescriptor rule = result.resolveRule(runData);
+		return rule==null || rule.getHelp()==null ? null : rule.getHelp().getMarkdown();
 	}
 
 	// Trim to at most maxLength chars (appending an ellipsis when truncated) so a

@@ -35,5 +35,5 @@ public final class MultiformatMessageString implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@JsonProperty private String text;
-	// @JsonProperty private String markdown;
+	@JsonProperty private String markdown;
 }

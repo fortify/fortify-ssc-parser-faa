@@ -13,7 +13,7 @@
           "rules": [
             {
               "id": "often-misused/authentication/3DD14DE38594C51AEAB9A46DF2EB085F",
-              "shortDescription": { "text": "Often Misused" },
+              "shortDescription": { "text": "Often Misused: Authentication" },
               "fullDescription": {
                 "text": "AuthenticationFilter determines login state solely by the presence of a cookie named \"user\". Cookies are client-controlled and unsigned, so an attacker can set user=anything to bypass authentication and access all non-whitelisted paths. Related flow: AuthenticationController.login() sets this cookie; MessageController reads it as the message author identity.",
                 "markdown": "`AuthenticationFilter` decides login state **solely from the presence of a cookie named `user`**. Cookies are client-controlled and unsigned, so an attacker can simply send `Cookie: user=admin` to bypass authentication and reach every non-whitelisted path.\n\n**Exploit flow**\n\n1. `AuthenticationController.login()` sets the `user` cookie on success.\n2. `AuthenticationFilter.doFilter()` treats the mere presence of that cookie as proof of authentication.\n3. `MessageController` trusts the same cookie as the message author identity, enabling impersonation."
@@ -24,6 +24,7 @@
               },
               "properties": {
                 "kingdom": "API Abuse",
+                "Type": "Often Misused",
                 "SubType": "Authentication",
                 "security-severity": "9.8",
                 "Impact": 4.0,
@@ -32,7 +33,7 @@
             },
             {
               "id": "cross-site-scripting/persistent/CFE4E750668A04EB465124ADB05C2FD8",
-              "shortDescription": { "text": "Cross-Site Scripting" },
+              "shortDescription": { "text": "Cross-Site Scripting: Persistent" },
               "fullDescription": {
                 "text": "User-supplied message body is stored via MessageDAO.post() (raw SQL INSERT, no sanitization) and later rendered unescaped in read.jsp through ${msg.body}. Attacker-controlled HTML and JavaScript persists in the database and executes in every viewer's browser session.",
                 "markdown": "User-supplied message body is stored via `MessageDAO.post()` (raw SQL `INSERT`, no sanitization) and later rendered **unescaped** in `read.jsp` via `${msg.body}`. Any HTML or JavaScript an author submits is persisted and then executes in **every** viewer's browser.\n\nExploitation requires an authenticated account that can post a message, which lowers the likelihood somewhat, but a single stored payload then affects all readers."
@@ -43,6 +44,7 @@
               },
               "properties": {
                 "kingdom": "Input Validation and Representation",
+                "Type": "Cross-Site Scripting",
                 "SubType": "Persistent",
                 "security-severity": "8.0",
                 "Impact": 4.0,

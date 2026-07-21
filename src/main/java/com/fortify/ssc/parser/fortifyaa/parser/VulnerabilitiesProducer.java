@@ -269,25 +269,29 @@ public final class VulnerabilitiesProducer {
 			getVulnerabilityAbstract(runData, result));
 	}
 	
-	// FAA emits FoD's expected (case-sensitive) property casing since 26.4: rule-level
-	// "kingdom" (lowercase) and "SubType". The capitalized variants are read as
-	// fallbacks so pre-26.4 SARIFs keep parsing.
+	// Rule-property lookups are case-insensitive (see getRuleProperties), so this
+	// reads FAA's current lowercase "kingdom" as well as the pre-26.4 "Kingdom".
 	private String getKingdom(RunData runData, Result result) {
 		String kingdom = getStringProperty(result.getProperties(), "kingdom", null);
 		if ( StringUtils.isBlank(kingdom) ) {
 			kingdom = getStringProperty(getRuleProperties(runData, result), "kingdom", null);
 		}
-		if ( StringUtils.isBlank(kingdom) ) {
-			kingdom = getStringProperty(getRuleProperties(runData, result), "Kingdom", null);
-		}
 		return kingdom;
 	}
 	
+	// Since FAA 26.4, the rule's shortDescription.text carries the combined
+	// "Category: Subcategory" DISPLAY string (for FoD and GitHub, which render only
+	// that member), while the bare Category travels in the rule property "Type"
+	// (FVDL naming). SSC keeps Category and Subcategory as separate fields and
+	// builds its own combined display, so the bare "Type" property is preferred;
+	// shortDescription remains a fallback for pre-26.4 FAA files (where it carried
+	// the bare category) and for generic SARIF.
 	private String getCategory(RunData runData, Result result) {
 		String category = null;
 		ReportingDescriptor rule = result.resolveRule(runData);
 		if ( rule != null ) {
-			if ( rule.getShortDescription() != null ) {
+			category = getStringProperty(getRuleProperties(rule), "Type", null);
+			if ( StringUtils.isBlank(category) && rule.getShortDescription() != null ) {
 				category = result.resolveMessage(rule.getShortDescription(), runData);
 			}
 			if ( StringUtils.isBlank(category) && StringUtils.isNotBlank(rule.getName()) ) {
@@ -296,9 +300,6 @@ public final class VulnerabilitiesProducer {
 				}else {
 					category = StringUtils.capitalize(StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(rule.getName()), StringUtils.SPACE));
 				}
-			}
-			if ( StringUtils.isBlank(category) ) {
-				category = getStringProperty(getRuleProperties(rule), "Type", null);
 			}
 		}
 		if ( StringUtils.isBlank(category) ) {
@@ -310,12 +311,10 @@ public final class VulnerabilitiesProducer {
 		return category;
 	}
 	
+	// Case-insensitive rule-property lookup covers both FAA's current "SubType"
+	// (FoD's casing since 26.4) and the pre-26.4 "Subtype".
 	private String getSubCategory(RunData runData, Result result) {
-		String subCategory = getStringProperty(getRuleProperties(runData, result), "SubType", null);
-		if ( StringUtils.isBlank(subCategory) ) {
-			subCategory = getStringProperty(getRuleProperties(runData, result), "Subtype", null);
-		}
-		return subCategory;
+		return getStringProperty(getRuleProperties(runData, result), "SubType", null);
 	}
 	
 	private String getAnalyzer(RunData runData, Result result) {
@@ -521,8 +520,17 @@ public final class VulnerabilitiesProducer {
 		return defaultValue;
 	}
 
+	// Rule property keys are matched case-insensitively. FAA's rule-property casing
+	// has been corrected before to satisfy FoD's case-sensitive reader (Kingdom →
+	// kingdom, Subtype → SubType), and further corrections on that channel must not
+	// silently break this plugin. If a rule carried keys differing only in case
+	// (never produced by FAA), one entry wins arbitrarily.
 	private Map<String, Object> getRuleProperties(ReportingDescriptor rule) {
-		return rule==null ? null : rule.getProperties();
+		Map<String, Object> properties = rule==null ? null : rule.getProperties();
+		if ( properties == null ) { return null; }
+		Map<String, Object> caseInsensitiveProperties = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		caseInsensitiveProperties.putAll(properties);
+		return caseInsensitiveProperties;
 	}
 	
 	private Map<String, Object> getRuleProperties(RunData runData, Result result) {

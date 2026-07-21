@@ -10,7 +10,7 @@
         <version><!--VERSION-->0.0<!--/VERSION--></version>
         <data-version>7</data-version>
         <vendor name="Open Text" url="https://opentext.com"/>
-        <description>Parser plugin for Fortify Agentic Analyzer (FAA) SARIF output. Data version 7 corresponds to the SARIF data format produced by FAA 26.4-preview3 and later (per-instance rules, contextRegion snippets, kingdom/SubType property casing, message = one-line summary with description/remediation in the rule's fullDescription/help).</description>
+        <description>Parser plugin for Fortify Agentic Analyzer (FAA) SARIF output. Data version 7 corresponds to the SARIF data format produced by FAA 26.4-preview3 and later (per-instance rules, contextRegion snippets, kingdom/Type/SubType rule properties carrying the bare taxonomy parts with the combined "Category: Subcategory" display string in the rule shortDescription, message = one-line summary with description/remediation in the rule's fullDescription/help).</description>
         <resources>
             <localization>
                 <language id="default" location="/resources/fortifyaa_en.properties"/>

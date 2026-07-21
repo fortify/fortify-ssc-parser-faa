@@ -45,9 +45,16 @@ to sibling folders or the analyzer's internal docs.
 The plugin consumes the fixed, predictable shape of FAA's SARIF output:
 
 - SARIF **rules are synthetic and per-instance** (1:1 with results; the rule id is
-  the category slug + instance id). Rules carry the Fortify taxonomy metadata:
-  `kingdom` / optional `SubType` — that is FAA's casing since 26.4; the plugin
-  falls back to the legacy `Kingdom` / `Subtype` for older files.
+  the category slug + instance id). Rules carry the Fortify taxonomy metadata as
+  bare parts in rule properties: `kingdom` / `Type` (Category) / optional `SubType`
+  (Subcategory) — that is FAA's casing since 26.4. The plugin matches **rule**
+  property keys case-insensitively (covering the pre-26.4 `Kingdom` / `Subtype`
+  and any future casing corrections driven by FoD's case-sensitive reader);
+  result property keys stay exact. The rule's `shortDescription.text`
+  is the combined "Category: Subcategory" *display* string (for FoD/GitHub, which
+  render only that member) — the plugin prefers the bare `Type` property for SSC's
+  separate Category field, using `shortDescription` only as a fallback for
+  pre-26.4 files (where it carried the bare category) and generic SARIF.
 - **Content channels (since FAA 26.4):** `result.message` is the one-line summary;
   the description is `rule.fullDescription` and the remediation is `rule.help`
   (markdown members preferred — the text members may be FoD-shaped HTML). Legacy

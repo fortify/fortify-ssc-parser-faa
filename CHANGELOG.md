@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.0](https://github.com/fortify/fortify-ssc-parser-faa/compare/v1.0.1...v1.1.0) (2026-07-21)
+
+
+### Features
+
+* plugin-api 1.2.2320.0, build-derived api-version, data-version 6 ([f3e703c](https://github.com/fortify/fortify-ssc-parser-faa/commit/f3e703cc81ca17198da5c80d8b6d4428dd380321))
+* prefer bare-category rule property Type; case-insensitive rule-property keys ([10c02b4](https://github.com/fortify/fortify-ssc-parser-faa/commit/10c02b4bfd03e40bdd7771dc18ebd96f6e460de7))
+* read description/remediation from the per-instance rule channels; message is the one-line summary (FAA 26.4 format) ([297bf42](https://github.com/fortify/fortify-ssc-parser-faa/commit/297bf422b005fe8336de9552c2f8ec8e3129921c))
+* support FAA 26.4 SARIF format (per-instance rules, contextRegion snippets, kingdom/SubType casing); bump data-version to 7 ([e789ca3](https://github.com/fortify/fortify-ssc-parser-faa/commit/e789ca350091f42bc83f912aba386b1e77e443bb))
+* trim snippet rendering to 5 lines of context around the affected line ([d2f5bf2](https://github.com/fortify/fortify-ssc-parser-faa/commit/d2f5bf2ce7553fbdcad73073d3e574ab9a35f527))
+
 ## [1.0.1](https://github.com/fortify/fortify-ssc-parser-faa/compare/v1.0.0...v1.0.1) (2026-07-01)
 
 

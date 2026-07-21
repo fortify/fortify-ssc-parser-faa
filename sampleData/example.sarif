@@ -12,43 +12,325 @@
           "informationUri": "https://opentext.com",
           "rules": [
             {
-              "id": "often-misused/authentication/3DD14DE38594C51AEAB9A46DF2EB085F",
-              "shortDescription": { "text": "Often Misused: Authentication" },
+              "id": "password-management/2A8F3E93A0D036B12B789AB6AEFD697E",
+              "shortDescription": {
+                "text": "Password Management"
+              },
               "fullDescription": {
-                "text": "AuthenticationFilter determines login state solely by the presence of a cookie named \"user\". Cookies are client-controlled and unsigned, so an attacker can set user=anything to bypass authentication and access all non-whitelisted paths. Related flow: AuthenticationController.login() sets this cookie; MessageController reads it as the message author identity.",
-                "markdown": "`AuthenticationFilter` decides login state **solely from the presence of a cookie named `user`**. Cookies are client-controlled and unsigned, so an attacker can simply send `Cookie: user=admin` to bypass authentication and reach every non-whitelisted path.\n\n**Exploit flow**\n\n1. `AuthenticationController.login()` sets the `user` cookie on success.\n2. `AuthenticationFilter.doFilter()` treats the mere presence of that cookie as proof of authentication.\n3. `MessageController` trusts the same cookie as the message author identity, enabling impersonation."
+                "text": "The <code>users</code> table schema defines <code>password VARCHAR(255)</code> and the accompanying seed data (<code>'**<strong>','</strong><strong>'</code>, <code>'</strong><strong>','</strong><strong>'</code>, <code>'</strong><strong>','</strong>**'</code>) inserts raw plaintext values into that column. There is no salt column, hash column, or any indication that a one-way hashing algorithm (bcrypt/argon2/PBKDF2) is used. Combined with <code>UserDAO.authenticate()</code> which compares the submitted password directly against this column via a raw SQL string, this confirms passwords are stored and compared in cleartext.\n\nIf the database is ever exposed (backup leak, SQL injection - which also exists in this same application, misconfigured access, insider threat), every user's plaintext password is immediately readable, and because users frequently reuse passwords, this enables account takeover on other services as well.",
+                "markdown": "The `users` table schema defines `password VARCHAR(255)` and the accompanying seed data (`'****','****'`, `'****','****'`, `'****','****'`) inserts raw plaintext values into that column. There is no salt column, hash column, or any indication that a one-way hashing algorithm (bcrypt/argon2/PBKDF2) is used. Combined with `UserDAO.authenticate()` which compares the submitted password directly against this column via a raw SQL string, this confirms passwords are stored and compared in cleartext.\n\nIf the database is ever exposed (backup leak, SQL injection - which also exists in this same application, misconfigured access, insider threat), every user's plaintext password is immediately readable, and because users frequently reuse passwords, this enables account takeover on other services as well."
               },
               "help": {
-                "text": "Stop trusting a client-side cookie as the authentication state; use a real server-side session instead:\n\n1. In AuthenticationController.login(), after verifying credentials, store the user server-side: request.getSession().setAttribute(\"user\", username).\n2. In AuthenticationFilter.doFilter(), derive loggedIn from session.getAttribute(\"user\") != null rather than cookie presence.\n3. Remove the client-visible user cookie entirely so it can no longer be forged.\n\nSee the OWASP Session Management Cheat Sheet.",
-                "markdown": "Stop trusting a client-side cookie as the authentication state; use a real server-side session instead:\n\n1. In `AuthenticationController.login()`, after verifying credentials, store the user server-side: `request.getSession().setAttribute(\"user\", username)`.\n2. In `AuthenticationFilter.doFilter()`, derive `loggedIn` from `session.getAttribute(\"user\") != null` rather than cookie presence.\n3. Remove the client-visible `user` cookie entirely so it can no longer be forged.\n\nSee the [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)."
+                "text": "Store only a salted password hash (e.g. bcrypt, scrypt, or Argon2) in the <code>password</code> column (or rename it to <code>password_hash</code>), never the plaintext value. Update seed/migration data to insert pre-computed hashes rather than plaintext strings, and update the authentication code to hash the submitted password and compare via the hashing library's verify function (constant-time comparison), not a database equality query.",
+                "markdown": "Store only a salted password hash (e.g. bcrypt, scrypt, or Argon2) in the `password` column (or rename it to `password_hash`), never the plaintext value. Update seed/migration data to insert pre-computed hashes rather than plaintext strings, and update the authentication code to hash the submitted password and compare via the hashing library's verify function (constant-time comparison), not a database equality query."
               },
               "properties": {
-                "kingdom": "API Abuse",
-                "Type": "Often Misused",
-                "SubType": "Authentication",
+                "kingdom": "Security Features",
+                "Type": "Password Management",
                 "security-severity": "9.8",
-                "Impact": 4.0,
-                "Probability": 4.0
+                "Impact": 3,
+                "Probability": 2.5
               }
             },
             {
-              "id": "cross-site-scripting/persistent/CFE4E750668A04EB465124ADB05C2FD8",
-              "shortDescription": { "text": "Cross-Site Scripting: Persistent" },
+              "id": "password-management/75116853BA208F123BCABE61D460C5AA",
+              "shortDescription": {
+                "text": "Password Management"
+              },
               "fullDescription": {
-                "text": "User-supplied message body is stored via MessageDAO.post() (raw SQL INSERT, no sanitization) and later rendered unescaped in read.jsp through ${msg.body}. Attacker-controlled HTML and JavaScript persists in the database and executes in every viewer's browser session.",
-                "markdown": "User-supplied message body is stored via `MessageDAO.post()` (raw SQL `INSERT`, no sanitization) and later rendered **unescaped** in `read.jsp` via `${msg.body}`. Any HTML or JavaScript an author submits is persisted and then executes in **every** viewer's browser.\n\nExploitation requires an authenticated account that can post a message, which lowers the likelihood somewhat, but a single stored payload then affects all readers."
+                "text": "The Flyway migration seeds the <code>users</code> table with three accounts whose passwords are identical to their usernames ('**<strong>'/'</strong><strong>', '</strong><strong>'/'</strong><strong>', '</strong><strong>'/'</strong><strong>'). If this migration runs against a production or externally reachable deployment and the default credentials are not rotated, an attacker can trivially authenticate as any of these users - including the <code></strong>**</code> account - via the login form, without needing to exploit any other vulnerability.",
+                "markdown": "The Flyway migration seeds the `users` table with three accounts whose passwords are identical to their usernames ('****'/'****', '****'/'****', '****'/'****'). If this migration runs against a production or externally reachable deployment and the default credentials are not rotated, an attacker can trivially authenticate as any of these users - including the `****` account - via the login form, without needing to exploit any other vulnerability."
               },
               "help": {
-                "text": "Encode on output and sanitize on input:\n\n- In read.jsp, replace ${msg.body} with <c:out value=\"${msg.body}\"/> so the value is HTML-encoded. Add the JSTL core taglib if it is not already imported.\n- In MessageDAO.post(), sanitize incoming HTML with an allowlist library such as the OWASP Java HTML Sanitizer before persisting.",
-                "markdown": "Encode on output and sanitize on input:\n\n- In `read.jsp`, replace `${msg.body}` with `<c:out value=\"${msg.body}\"/>` so the value is HTML-encoded. Add `<%@ taglib prefix=\"c\" uri=\"http://java.sun.com/jsp/jstl/core\" %>` if it is not already imported.\n- In `MessageDAO.post()`, sanitize incoming HTML with an allowlist library such as the [OWASP Java HTML Sanitizer](https://github.com/OWASP/java-html-sanitizer) before persisting."
+                "text": "Do not ship default accounts with predictable/matching credentials in migrations that can run against production. Generate strong random passwords for any seeded accounts, force a password change on first login, or gate seed data behind a non-production Spring profile.",
+                "markdown": "Do not ship default accounts with predictable/matching credentials in migrations that can run against production. Generate strong random passwords for any seeded accounts, force a password change on first login, or gate seed data behind a non-production Spring profile."
+              },
+              "properties": {
+                "kingdom": "Security Features",
+                "Type": "Password Management",
+                "security-severity": "9.8",
+                "Impact": 3,
+                "Probability": 4.5
+              }
+            },
+            {
+              "id": "cross-site-scripting/reflected/3367D21BCDB5E8735ABCB527DAB3EBEA",
+              "shortDescription": {
+                "text": "Cross-Site Scripting: Reflected"
+              },
+              "fullDescription": {
+                "text": "The login page echoes the <code>prefillUsername</code> request attribute directly into the HTML body using unescaped JSP EL (<code>${prefillUsername}</code>) instead of <code>&lt;c:out&gt;</code> or <code>fn:escapeXml()</code>. Since the username the user typed on a failed login attempt is attacker-controlled and reflected back verbatim, an attacker can submit a username such as <code>&lt;script&gt;alert(document.cookie)&lt;/script&gt;</code> (or any HTML/JS payload) to the login POST endpoint. Because the login form is unauthenticated and reachable by anyone, a crafted link or auto-submitting form pointing at <code>/auth/login</code> with a malicious <code>username</code> parameter will trigger script execution in the victim's browser in the context of the forum's origin, enabling session/cookie theft or further attacks.",
+                "markdown": "The login page echoes the `prefillUsername` request attribute directly into the HTML body using unescaped JSP EL (`${prefillUsername}`) instead of `<c:out>` or `fn:escapeXml()`. Since the username the user typed on a failed login attempt is attacker-controlled and reflected back verbatim, an attacker can submit a username such as `<script>alert(document.cookie)</script>` (or any HTML/JS payload) to the login POST endpoint. Because the login form is unauthenticated and reachable by anyone, a crafted link or auto-submitting form pointing at `/auth/login` with a malicious `username` parameter will trigger script execution in the victim's browser in the context of the forum's origin, enabling session/cookie theft or further attacks.\n"
+              },
+              "help": {
+                "text": "Escape the value before output, e.g. <code>&lt;c:out value=\"${prefillUsername}\"/&gt;</code> or <code>${fn:escapeXml(prefillUsername)}</code>, and apply the same treatment to the same variable used in the <code>value</code> attribute of the username input field.",
+                "markdown": "Escape the value before output, e.g. `<c:out value=\"${prefillUsername}\"/>` or `${fn:escapeXml(prefillUsername)}`, and apply the same treatment to the same variable used in the `value` attribute of the username input field."
+              },
+              "properties": {
+                "kingdom": "Input Validation and Representation",
+                "Type": "Cross-Site Scripting",
+                "SubType": "Reflected",
+                "security-severity": "9.8",
+                "Impact": 3.5,
+                "Probability": 4
+              }
+            },
+            {
+              "id": "cross-site-scripting/reflected/AB6FF6B2B45E91E57A6436079A12D4AC",
+              "shortDescription": {
+                "text": "Cross-Site Scripting: Reflected"
+              },
+              "fullDescription": {
+                "text": "The <code>value</code> attribute of the username <code>&lt;input&gt;</code> field is populated directly from <code>${prefillUsername}</code> without HTML-attribute encoding. An attacker-supplied username containing a double quote can break out of the attribute context, e.g. <code>x\" onfocus=\"alert(document.cookie)\" autofocus=\"</code>, injecting arbitrary HTML/JS attributes into the DOM. Combined with <code>autofocus=\"\"</code> already present, an injected <code>onfocus</code> handler fires immediately when the page loads, giving reliable script execution without any user interaction beyond visiting a crafted URL/form.",
+                "markdown": "The `value` attribute of the username `<input>` field is populated directly from `${prefillUsername}` without HTML-attribute encoding. An attacker-supplied username containing a double quote can break out of the attribute context, e.g. `x\" onfocus=\"alert(document.cookie)\" autofocus=\"`, injecting arbitrary HTML/JS attributes into the DOM. Combined with `autofocus=\"\"` already present, an injected `onfocus` handler fires immediately when the page loads, giving reliable script execution without any user interaction beyond visiting a crafted URL/form.\n"
+              },
+              "help": {
+                "text": "Encode the value for the HTML attribute context, e.g. <code>value=\"&lt;c:out value=\"${prefillUsername}\"/&gt;\"</code> (JSTL <code>c:out</code> HTML-escapes by default and is safe inside a quoted attribute), or use <code>fn:escapeXml(prefillUsername)</code>.",
+                "markdown": "Encode the value for the HTML attribute context, e.g. `value=\"<c:out value=\"${prefillUsername}\"/>\"` (JSTL `c:out` HTML-escapes by default and is safe inside a quoted attribute), or use `fn:escapeXml(prefillUsername)`."
+              },
+              "properties": {
+                "kingdom": "Input Validation and Representation",
+                "Type": "Cross-Site Scripting",
+                "SubType": "Reflected",
+                "security-severity": "9.8",
+                "Impact": 3.5,
+                "Probability": 4
+              }
+            },
+            {
+              "id": "cross-site-scripting/persistent/7FB75AE1005C830DC71ECD90B75C4BC2",
+              "shortDescription": {
+                "text": "Cross-Site Scripting: Persistent"
+              },
+              "fullDescription": {
+                "text": "The message list page renders <code>${msg.subject}</code> (and <code>${msg.author}</code>, <code>${msg.timestamp}</code>) directly via JSP EL without any escaping (no <code>c:out</code>, no <code>fn:escapeXml</code>). The <code>compose.jsp</code> form lets any authenticated user submit an arbitrary, unsanitized <code>subject</code> string that is persisted server-side and later rendered here to every user who views the message list (including other forum members). An attacker can compose a message with subject <code>&lt;script&gt;...&lt;/script&gt;</code> or an <code>&lt;img onerror=...&gt;</code> payload; when any other user opens the message list, the payload executes in their browser session, allowing session/cookie theft, forced actions (e.g. auto-submitting the unprotected compose form), or defacement. Because this is stored and displayed to all viewers, this is a persistent XSS with high blast radius.",
+                "markdown": "The message list page renders `${msg.subject}` (and `${msg.author}`, `${msg.timestamp}`) directly via JSP EL without any escaping (no `c:out`, no `fn:escapeXml`). The `compose.jsp` form lets any authenticated user submit an arbitrary, unsanitized `subject` string that is persisted server-side and later rendered here to every user who views the message list (including other forum members). An attacker can compose a message with subject `<script>...</script>` or an `<img onerror=...>` payload; when any other user opens the message list, the payload executes in their browser session, allowing session/cookie theft, forced actions (e.g. auto-submitting the unprotected compose form), or defacement. Because this is stored and displayed to all viewers, this is a persistent XSS with high blast radius.\n"
+              },
+              "help": {
+                "text": "Escape all user-controlled fields on output: <code>&lt;c:out value=\"${msg.subject}\"/&gt;</code>, <code>&lt;c:out value=\"${msg.author}\"/&gt;</code>, and format/escape <code>${msg.timestamp}</code> as needed. Additionally consider sanitizing/validating message subject and body server-side on submission.",
+                "markdown": "Escape all user-controlled fields on output: `<c:out value=\"${msg.subject}\"/>`, `<c:out value=\"${msg.author}\"/>`, and format/escape `${msg.timestamp}` as needed. Additionally consider sanitizing/validating message subject and body server-side on submission."
               },
               "properties": {
                 "kingdom": "Input Validation and Representation",
                 "Type": "Cross-Site Scripting",
                 "SubType": "Persistent",
-                "security-severity": "8.0",
-                "Impact": 4.0,
-                "Probability": 2.0
+                "security-severity": "9.8",
+                "Impact": 4,
+                "Probability": 4
+              }
+            },
+            {
+              "id": "cross-site-scripting/persistent/3C8BB7B76273D76C70F3B01E6B93DE4E",
+              "shortDescription": {
+                "text": "Cross-Site Scripting: Persistent"
+              },
+              "fullDescription": {
+                "text": "Similarly to the subject field, <code>${msg.author}</code> is rendered without HTML escaping. If the author name is derived from user-controllable data (e.g. a display name/username set at registration, or otherwise attacker-influenced metadata attached to a message), an attacker can inject a script payload that executes in the browser of anyone browsing the message list. Even if <code>author</code> is normally a fixed username, defense-in-depth escaping is required because the value's provenance is not enforced by this view and any future relaxation of username validation (or a spoofed field in the persisted message object) becomes an exploitable stored XSS at this exact sink.",
+                "markdown": "Similarly to the subject field, `${msg.author}` is rendered without HTML escaping. If the author name is derived from user-controllable data (e.g. a display name/username set at registration, or otherwise attacker-influenced metadata attached to a message), an attacker can inject a script payload that executes in the browser of anyone browsing the message list. Even if `author` is normally a fixed username, defense-in-depth escaping is required because the value's provenance is not enforced by this view and any future relaxation of username validation (or a spoofed field in the persisted message object) becomes an exploitable stored XSS at this exact sink.\n"
+              },
+              "help": {
+                "text": "Wrap all interpolated fields with <code>&lt;c:out value=\"...\"/&gt;</code> (or use the JSTL escapeXml function) so any HTML-significant characters are encoded before being written to the response.",
+                "markdown": "Wrap all interpolated fields with `<c:out value=\"...\"/>` (or use the JSTL escapeXml function) so any HTML-significant characters are encoded before being written to the response."
+              },
+              "properties": {
+                "kingdom": "Input Validation and Representation",
+                "Type": "Cross-Site Scripting",
+                "SubType": "Persistent",
+                "security-severity": "9.8",
+                "Impact": 4,
+                "Probability": 3.5
+              }
+            },
+            {
+              "id": "cross-site-scripting/persistent/6B34CFED4635C63891FA5A9A1B3A7EB8",
+              "shortDescription": {
+                "text": "Cross-Site Scripting: Persistent"
+              },
+              "fullDescription": {
+                "text": "The <code>subject</code> field of a forum message is rendered with raw EL (<code>${msg.subject}</code>), which JSP EL does <strong>not</strong> HTML-encode by default. The value originates from <code>MessageController.composeSubmit</code>, which accepts an unauthenticated <code>subject</code> request parameter and persists it verbatim via <code>MessageDAO.post(...)</code>. Any user (no authentication required) can submit a message whose subject contains <code>&lt;script&gt;...&lt;/script&gt;</code> or other HTML/JS markup; when any visitor later opens the message via <code>/messages/read/{id}</code>, the payload is rendered directly into the page and executes in that visitor's browser session.\n\nThis is a classic stored/persistent XSS: attacker input flows unsanitized from an HTTP parameter, through the database, to an HTML sink with no encoding at any point in the chain.",
+                "markdown": "\nThe `subject` field of a forum message is rendered with raw EL (`${msg.subject}`), which JSP EL does **not** HTML-encode by default. The value originates from `MessageController.composeSubmit`, which accepts an unauthenticated `subject` request parameter and persists it verbatim via `MessageDAO.post(...)`. Any user (no authentication required) can submit a message whose subject contains `<script>...</script>` or other HTML/JS markup; when any visitor later opens the message via `/messages/read/{id}`, the payload is rendered directly into the page and executes in that visitor's browser session.\n\nThis is a classic stored/persistent XSS: attacker input flows unsanitized from an HTTP parameter, through the database, to an HTML sink with no encoding at any point in the chain.\n"
+              },
+              "help": {
+                "text": "Use JSTL's escaping output tag instead of raw EL, e.g. <code>&lt;c:out value=\"${msg.subject}\"/&gt;</code>, or configure the page/tag library to auto-escape EL output. Also consider server-side output encoding/sanitization at the point of storage or retrieval as defense in depth.",
+                "markdown": "Use JSTL's escaping output tag instead of raw EL, e.g. `<c:out value=\"${msg.subject}\"/>`, or configure the page/tag library to auto-escape EL output. Also consider server-side output encoding/sanitization at the point of storage or retrieval as defense in depth."
+              },
+              "properties": {
+                "kingdom": "Input Validation and Representation",
+                "Type": "Cross-Site Scripting",
+                "SubType": "Persistent",
+                "security-severity": "9.8",
+                "Impact": 3.8,
+                "Probability": 4
+              }
+            },
+            {
+              "id": "cross-site-scripting/persistent/213957AFEE2E408E5B242E96370EDF42",
+              "shortDescription": {
+                "text": "Cross-Site Scripting: Persistent"
+              },
+              "fullDescription": {
+                "text": "The <code>author</code> value is taken directly from the <code>user</code> cookie in <code>MessageController.composeSubmit</code> (<code>@CookieValue(value = \"user\", defaultValue = \"anonymous\")</code>), with no validation, and stored verbatim by <code>MessageDAO.post(...)</code>. When the message is later opened via <code>/messages/read/{id}</code>, <code>read.jsp</code> renders it with unescaped EL (<code>${msg.author}</code>), which does not HTML-encode by default.\n\nBecause the <code>user</code> cookie is fully attacker-controlled (any client can set an arbitrary cookie value before posting a message), an attacker can set <code>user=&lt;script&gt;...&lt;/script&gt;</code> (or similar HTML payload), submit a message, and have the payload execute in the browser of any subsequent visitor who reads that message.",
+                "markdown": "\nThe `author` value is taken directly from the `user` cookie in `MessageController.composeSubmit` (`@CookieValue(value = \"user\", defaultValue = \"anonymous\")`), with no validation, and stored verbatim by `MessageDAO.post(...)`. When the message is later opened via `/messages/read/{id}`, `read.jsp` renders it with unescaped EL (`${msg.author}`), which does not HTML-encode by default.\n\nBecause the `user` cookie is fully attacker-controlled (any client can set an arbitrary cookie value before posting a message), an attacker can set `user=<script>...</script>` (or similar HTML payload), submit a message, and have the payload execute in the browser of any subsequent visitor who reads that message.\n"
+              },
+              "help": {
+                "text": "Escape the author value on output, e.g. <code>&lt;c:out value=\"${msg.author}\"/&gt;</code>, and additionally validate/sanitize the <code>user</code> cookie value server-side before persisting it.",
+                "markdown": "Escape the author value on output, e.g. `<c:out value=\"${msg.author}\"/>`, and additionally validate/sanitize the `user` cookie value server-side before persisting it."
+              },
+              "properties": {
+                "kingdom": "Input Validation and Representation",
+                "Type": "Cross-Site Scripting",
+                "SubType": "Persistent",
+                "security-severity": "9.8",
+                "Impact": 3.8,
+                "Probability": 4
+              }
+            },
+            {
+              "id": "cross-site-scripting/persistent/CFE4E750668A04EB465124ADB05C2FD8",
+              "shortDescription": {
+                "text": "Cross-Site Scripting: Persistent"
+              },
+              "fullDescription": {
+                "text": "The message <code>body</code> field is rendered using raw EL (<code>${msg.body}</code>) which is not HTML-encoded by the JSP EL evaluator. This value comes from the unauthenticated <code>body</code> request parameter accepted by <code>MessageController.composeSubmit</code> and stored verbatim by <code>MessageDAO.post(...)</code>. Any anonymous user can post a message whose body contains an XSS payload; the payload runs in the browser of every user who subsequently reads the message via <code>/messages/read/{id}</code>, allowing session/cookie theft, forum-wide defacement, or further attacks against other users' browsers.",
+                "markdown": "\nThe message `body` field is rendered using raw EL (`${msg.body}`) which is not HTML-encoded by the JSP EL evaluator. This value comes from the unauthenticated `body` request parameter accepted by `MessageController.composeSubmit` and stored verbatim by `MessageDAO.post(...)`. Any anonymous user can post a message whose body contains an XSS payload; the payload runs in the browser of every user who subsequently reads the message via `/messages/read/{id}`, allowing session/cookie theft, forum-wide defacement, or further attacks against other users' browsers.\n"
+              },
+              "help": {
+                "text": "Render the body via an escaping construct, e.g. <code>&lt;c:out value=\"${msg.body}\"/&gt;</code>, or run the content through a vetted HTML sanitizer if some markup must be preserved, rather than emitting raw EL output.",
+                "markdown": "Render the body via an escaping construct, e.g. `<c:out value=\"${msg.body}\"/>`, or run the content through a vetted HTML sanitizer if some markup must be preserved, rather than emitting raw EL output."
+              },
+              "properties": {
+                "kingdom": "Input Validation and Representation",
+                "Type": "Cross-Site Scripting",
+                "SubType": "Persistent",
+                "security-severity": "9.8",
+                "Impact": 3.8,
+                "Probability": 4
+              }
+            },
+            {
+              "id": "dockerfile-misconfiguration/661E4F6E613F1137ED5399F6DD303C21",
+              "shortDescription": {
+                "text": "Dockerfile Misconfiguration"
+              },
+              "fullDescription": {
+                "text": "The Dockerfile never declares a non-root <code>USER</code>, so the process launched by <code>ENTRYPOINT [\"java\", \"-jar\", ...]</code> runs as <code>root</code> inside the container. Combined with the multiple injection vulnerabilities present elsewhere in this application (e.g. SQL injection in <code>MessageDAO</code>, stored XSS in the JSP views), any successful remote-code-execution or container-breakout primitive achieved through the application would immediately grant the attacker root privileges inside the container, maximizing the blast radius of any container-escape vector (e.g. via a kernel or runtime vulnerability) and simplifying further lateral movement or privilege escalation on the host if the container runtime is misconfigured.",
+                "markdown": "\nThe Dockerfile never declares a non-root `USER`, so the process launched by `ENTRYPOINT [\"java\", \"-jar\", ...]` runs as `root` inside the container. Combined with the multiple injection vulnerabilities present elsewhere in this application (e.g. SQL injection in `MessageDAO`, stored XSS in the JSP views), any successful remote-code-execution or container-breakout primitive achieved through the application would immediately grant the attacker root privileges inside the container, maximizing the blast radius of any container-escape vector (e.g. via a kernel or runtime vulnerability) and simplifying further lateral movement or privilege escalation on the host if the container runtime is misconfigured.\n"
+              },
+              "help": {
+                "text": "Create and switch to a dedicated non-root user/group in the Dockerfile, e.g.:<pre>RUN addgroup -S app &amp;&amp; adduser -S app -G app\nUSER app</pre>placed before the ENTRYPOINT, so the JVM process runs unprivileged.",
+                "markdown": "Create and switch to a dedicated non-root user/group in the Dockerfile, e.g.:\n```\nRUN addgroup -S app && adduser -S app -G app\nUSER app\n```\nplaced before the ENTRYPOINT, so the JVM process runs unprivileged."
+              },
+              "properties": {
+                "kingdom": "Environment",
+                "Type": "Dockerfile Misconfiguration",
+                "security-severity": "2.0",
+                "Impact": 2,
+                "Probability": 2
+              }
+            },
+            {
+              "id": "privacy-violation/E1403836ED13390CD14F4B4BFFB060CF",
+              "shortDescription": {
+                "text": "Privacy Violation"
+              },
+              "fullDescription": {
+                "text": "The <code>jdbcTemplate</code> bean wraps the real <code>DataSource</code> in a ttddyy <code>ProxyDataSourceBuilder</code> that logs every executed SQL statement (including bound values / the literal statement text) via SLF4J at DEBUG level under logger <code>com.example.insecureforum.jdbc</code>.\n\n<code>application.properties</code> sets <code>logging.level.com.example.insecureforum=DEBUG</code>, which activates this logging in the running application (this is not a dev-only opt-in - it is baked into the shipped configuration).\n\nBecause <code>UserDAO.authenticate()</code> builds its SQL by direct string concatenation of the username and password (<code>\"... password = '\" + password + \"'\"</code>), every login attempt causes the plaintext username and password to be written verbatim to the application log file/stream. Log files are frequently retained, shipped to centralized logging/SIEM systems, or accessible to a wider set of operators/****istrators than the application's own database, so this significantly increases the blast radius of a credential leak and makes log storage a high-value secondary target.\n\nAny other DAO method executing queries with sensitive parameters (session tokens, PII, message content) is likewise fully logged in cleartext, regardless of whether the surrounding code intended that value to be secret.",
+                "markdown": "The `jdbcTemplate` bean wraps the real `DataSource` in a ttddyy `ProxyDataSourceBuilder` that logs every executed SQL statement (including bound values / the literal statement text) via SLF4J at DEBUG level under logger `com.example.insecureforum.jdbc`.\n\n`application.properties` sets `logging.level.com.example.insecureforum=DEBUG`, which activates this logging in the running application (this is not a dev-only opt-in - it is baked into the shipped configuration).\n\nBecause `UserDAO.authenticate()` builds its SQL by direct string concatenation of the username and password (`\"... password = '\" + password + \"'\"`), every login attempt causes the plaintext username and password to be written verbatim to the application log file/stream. Log files are frequently retained, shipped to centralized logging/SIEM systems, or accessible to a wider set of operators/****istrators than the application's own database, so this significantly increases the blast radius of a credential leak and makes log storage a high-value secondary target.\n\nAny other DAO method executing queries with sensitive parameters (session tokens, PII, message content) is likewise fully logged in cleartext, regardless of whether the surrounding code intended that value to be secret."
+              },
+              "help": {
+                "text": "Do not enable full SQL/parameter logging (<code>logQueryBySlf4j</code>) in a build/config that will run in anything other than an isolated local development environment. If query logging is required for troubleshooting: mask or omit bind parameters that carry credentials/secrets before logging (custom formatter instead of the default listener), gate the DEBUG SQL logger behind a non-production profile, and fix the root cause in <code>UserDAO.authenticate</code> by using parameterized queries (<code>?</code> placeholders) so raw credential values never become part of the logged SQL string.",
+                "markdown": "Do not enable full SQL/parameter logging (`logQueryBySlf4j`) in a build/config that will run in anything other than an isolated local development environment. If query logging is required for troubleshooting: mask or omit bind parameters that carry credentials/secrets before logging (custom formatter instead of the default listener), gate the DEBUG SQL logger behind a non-production profile, and fix the root cause in `UserDAO.authenticate` by using parameterized queries (`?` placeholders) so raw credential values never become part of the logged SQL string."
+              },
+              "properties": {
+                "kingdom": "Security Features",
+                "Type": "Privacy Violation",
+                "security-severity": "9.8",
+                "Impact": 3,
+                "Probability": 3
+              }
+            },
+            {
+              "id": "log-forging/EF891E2D559ED0AD52665CD652EDCD04",
+              "shortDescription": {
+                "text": "Log Forging"
+              },
+              "fullDescription": {
+                "text": "The proxied <code>DataSource</code> created here logs the literal, fully-interpolated SQL statement text for every query executed through the returned <code>JdbcTemplate</code>. Because several DAOs (e.g. <code>UserDAO.authenticate</code>) build these statements by directly concatenating unsanitized, attacker-supplied request parameters (username, password, message text, etc.) into the SQL string rather than using bind parameters, that same attacker-controlled text - including any CR/LF or control characters the user chooses to submit - ends up written verbatim into the SLF4J log output configured by this bean.\n\nAn attacker who controls a request parameter can therefore inject newlines/control sequences into the SQL string that get faithfully reproduced in the log stream, letting them forge fake log entries, split lines to confuse log parsers, or inject terminal escape sequences into log viewers.",
+                "markdown": "The proxied `DataSource` created here logs the literal, fully-interpolated SQL statement text for every query executed through the returned `JdbcTemplate`. Because several DAOs (e.g. `UserDAO.authenticate`) build these statements by directly concatenating unsanitized, attacker-supplied request parameters (username, password, message text, etc.) into the SQL string rather than using bind parameters, that same attacker-controlled text - including any CR/LF or control characters the user chooses to submit - ends up written verbatim into the SLF4J log output configured by this bean.\n\nAn attacker who controls a request parameter can therefore inject newlines/control sequences into the SQL string that get faithfully reproduced in the log stream, letting them forge fake log entries, split lines to confuse log parsers, or inject terminal escape sequences into log viewers."
+              },
+              "help": {
+                "text": "Use parameterized/prepared statements everywhere (removing the ability for user input to become part of the logged SQL text), and/or configure a logging formatter that neutralizes CR/LF and control characters before writing log records (e.g. a custom SLF4J/Logback layout or a query-formatter for the ttddyy listener that escapes newlines).",
+                "markdown": "Use parameterized/prepared statements everywhere (removing the ability for user input to become part of the logged SQL text), and/or configure a logging formatter that neutralizes CR/LF and control characters before writing log records (e.g. a custom SLF4J/Logback layout or a query-formatter for the ttddyy listener that escapes newlines)."
+              },
+              "properties": {
+                "kingdom": "Input Validation and Representation",
+                "Type": "Log Forging",
+                "security-severity": "5.5",
+                "Impact": 1.8,
+                "Probability": 2.5
+              }
+            },
+            {
+              "id": "authentication-bad-practice/C80A51BB30CC5738A8F5D9049DDA35A0",
+              "shortDescription": {
+                "text": "Authentication Bad Practice"
+              },
+              "fullDescription": {
+                "text": "The security gate for every non-whitelisted request is this line:<pre>boolean loggedIn = cookies != null &amp;&amp; stream(cookies).anyMatch(c -&gt; \"user\".equals(c.getName()));</pre><code>loggedIn</code> is derived solely from the *existence* of a cookie called <code>user</code> - the cookie's *value* is never checked. There is no server-side session store, no signature, no MAC, and no cross-reference to any authenticated session identifier anywhere in the application (confirmed by inspecting <code>AuthenticationController</code>, which simply does <code>new Cookie(\"user\", username)</code> with no signing).\n\nBecause the cookie is a plain, unsigned, attacker-controlled value, any unauthenticated client can bypass authentication entirely by sending a request with a forged cookie, e.g.:<pre>Cookie: user=****</pre>This single header satisfies <code>loggedIn == true</code> for the filter, granting access to every protected route (<code>/messages/list</code>, <code>/messages/compose</code>, <code>/messages/read/*</code>, etc.) without ever calling <code>UserDAO.authenticate</code>. It also determines the identity later used for message attribution (see <code>MessageController</code>), so this is both an authentication bypass and an impersonation vector.\n\nThis violates the State Invariant assumption that the <code>user</code> cookie cannot be forged/replayed by anyone who is not actually authenticated.",
+                "markdown": "\nThe security gate for every non-whitelisted request is this line:\n\n```java\nboolean loggedIn = cookies != null && stream(cookies).anyMatch(c -> \"user\".equals(c.getName()));\n```\n\n`loggedIn` is derived solely from the *existence* of a cookie called `user` - the cookie's *value* is never checked. There is no server-side session store, no signature, no MAC, and no cross-reference to any authenticated session identifier anywhere in the application (confirmed by inspecting `AuthenticationController`, which simply does `new Cookie(\"user\", username)` with no signing).\n\nBecause the cookie is a plain, unsigned, attacker-controlled value, any unauthenticated client can bypass authentication entirely by sending a request with a forged cookie, e.g.:\n\n```\nCookie: user=****\n```\n\nThis single header satisfies `loggedIn == true` for the filter, granting access to every protected route (`/messages/list`, `/messages/compose`, `/messages/read/*`, etc.) without ever calling `UserDAO.authenticate`. It also determines the identity later used for message attribution (see `MessageController`), so this is both an authentication bypass and an impersonation vector.\n\nThis violates the State Invariant assumption that the `user` cookie cannot be forged/replayed by anyone who is not actually authenticated.\n"
+              },
+              "help": {
+                "text": "Do not use an unsigned cookie as an authentication token. Use a framework-managed, server-side session (e.g. <code>HttpSession</code>, or Spring Security's authentication mechanisms) where the session identifier is a high-entropy random value the server can validate, or, if a persistent cookie login token must be used, sign/HMAC it with a server secret and verify the signature (and expiry) before trusting it, and bind the identity by looking up the corresponding user record rather than trusting a cookie value directly.",
+                "markdown": "Do not use an unsigned cookie as an authentication token. Use a framework-managed, server-side session (e.g. `HttpSession`, or Spring Security's authentication mechanisms) where the session identifier is a high-entropy random value the server can validate, or, if a persistent cookie login token must be used, sign/HMAC it with a server secret and verify the signature (and expiry) before trusting it, and bind the identity by looking up the corresponding user record rather than trusting a cookie value directly."
+              },
+              "properties": {
+                "kingdom": "Security Features",
+                "Type": "Authentication Bad Practice",
+                "security-severity": "9.8",
+                "Impact": 4.5,
+                "Probability": 4.5
+              }
+            },
+            {
+              "id": "trust-boundary-violation/2EE405BB8A751E0AADB18CECFB8E46F1",
+              "shortDescription": {
+                "text": "Trust Boundary Violation"
+              },
+              "fullDescription": {
+                "text": "<code>composeSubmit</code> binds the <code>author</code> value that gets persisted with each forum message directly from the client-supplied cookie:<pre>public RedirectView composeSubmit(@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user, ...)\nmessageDao.post(user, subject, body);</pre>As shown in <code>AuthenticationController</code>, the <code>user</code> cookie is never signed or otherwise bound to a server-verified session - it is set to the raw username string typed at login and can be set to any value by the client. Consequently, any user (even one that never authenticated, thanks to the <code>defaultValue</code>/no-cookie handling and, more critically, thanks to the fact anyone can set an arbitrary <code>Cookie: user=&lt;victim&gt;</code> header) can post messages that are permanently attributed to another user's identity, e.g. an **** or another forum member, since the message author field is trusted without verification against any authenticated principal.\n\nThis is a state invariant violation: the code assumes the <code>user</code> cookie is trustworthy proof of the current user's identity, but nothing in the codebase makes that true.",
+                "markdown": "\n`composeSubmit` binds the `author` value that gets persisted with each forum message directly from the client-supplied cookie:\n\n```java\npublic RedirectView composeSubmit(@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user, ...)\nmessageDao.post(user, subject, body);\n```\n\nAs shown in `AuthenticationController`, the `user` cookie is never signed or otherwise bound to a server-verified session - it is set to the raw username string typed at login and can be set to any value by the client. Consequently, any user (even one that never authenticated, thanks to the `defaultValue`/no-cookie handling and, more critically, thanks to the fact anyone can set an arbitrary `Cookie: user=<victim>` header) can post messages that are permanently attributed to another user's identity, e.g. an **** or another forum member, since the message author field is trusted without verification against any authenticated principal.\n\nThis is a state invariant violation: the code assumes the `user` cookie is trustworthy proof of the current user's identity, but nothing in the codebase makes that true.\n"
+              },
+              "help": {
+                "text": "Resolve the acting user from a verified server-side session/principal object (e.g., <code>Authentication</code> from Spring Security or a session attribute set only after successful credential verification) instead of reading the raw cookie value, and use that verified identity as the <code>author</code> argument to <code>messageDao.post</code>.",
+                "markdown": "Resolve the acting user from a verified server-side session/principal object (e.g., `Authentication` from Spring Security or a session attribute set only after successful credential verification) instead of reading the raw cookie value, and use that verified identity as the `author` argument to `messageDao.post`."
+              },
+              "properties": {
+                "kingdom": "Encapsulation",
+                "Type": "Trust Boundary Violation",
+                "security-severity": "9.8",
+                "Impact": 3,
+                "Probability": 4
+              }
+            },
+            {
+              "id": "cross-site-request-forgery/E20111CE9585E627AE70D5804D598A00",
+              "shortDescription": {
+                "text": "Cross-Site Request Forgery"
+              },
+              "fullDescription": {
+                "text": "<code>composeSubmit</code> performs a state-changing action (creating a forum post, attributed to the caller's <code>user</code> cookie) purely based on session-like state carried in a cookie that browsers attach automatically to same-site requests. There is no CSRF synchronizer token in the <code>compose.jsp</code> form, no <code>SameSite</code> cookie attribute set on the <code>user</code> cookie (see <code>AuthenticationController.setCookie</code>), and no CSRF filter registered anywhere in the project (<code>AuthenticationFilter</code> only inspects presence of the cookie; no Spring Security or custom CSRF protection exists).\n\nBecause the entire authentication model is \"cookie automatically sent by the browser,\" a third-party site can trigger a forged cross-site POST to <code>/messages/compose</code> (e.g. via an auto-submitting HTML form) while a victim's browser still holds a valid <code>user</code> cookie, causing the victim's browser to silently post arbitrary forum content attributed to them.",
+                "markdown": "\n`composeSubmit` performs a state-changing action (creating a forum post, attributed to the caller's `user` cookie) purely based on session-like state carried in a cookie that browsers attach automatically to same-site requests. There is no CSRF synchronizer token in the `compose.jsp` form, no `SameSite` cookie attribute set on the `user` cookie (see `AuthenticationController.setCookie`), and no CSRF filter registered anywhere in the project (`AuthenticationFilter` only inspects presence of the cookie; no Spring Security or custom CSRF protection exists).\n\nBecause the entire authentication model is \"cookie automatically sent by the browser,\" a third-party site can trigger a forged cross-site POST to `/messages/compose` (e.g. via an auto-submitting HTML form) while a victim's browser still holds a valid `user` cookie, causing the victim's browser to silently post arbitrary forum content attributed to them.\n"
+              },
+              "help": {
+                "text": "Add CSRF protection (e.g. Spring Security's CSRF filter with a per-session synchronizer token embedded in the compose form and validated server-side), and/or set <code>SameSite=Strict</code>/<code>Lax</code> on the authentication cookie to reduce cross-site submission risk.",
+                "markdown": "Add CSRF protection (e.g. Spring Security's CSRF filter with a per-session synchronizer token embedded in the compose form and validated server-side), and/or set `SameSite=Strict`/`Lax` on the authentication cookie to reduce cross-site submission risk."
+              },
+              "properties": {
+                "kingdom": "Encapsulation",
+                "Type": "Cross-Site Request Forgery",
+                "security-severity": "9.8",
+                "Impact": 2.5,
+                "Probability": 3
               }
             }
           ]
@@ -56,87 +338,152 @@
       },
       "invocations": [
         {
-          "startTimeUtc": "2025-07-10T14:32:00.000Z",
-          "endTimeUtc": "2025-07-10T14:34:47.000Z",
-          "machine": "RYZEN5800X",
+          "startTimeUtc": "2026-07-21T19:51:34.730Z",
+          "endTimeUtc": "2026-07-21T19:57:06.584Z",
+          "machine": "OTX-4KSLW33",
           "executionSuccessful": true,
           "properties": {
-            "agent": "FAA (Pi+Sonnet4.5)",
+            "agent": "FAA (Pi+Sonnet5)",
             "agentVersion": "26.4-preview3",
-            "tokensInput": 128540,
-            "tokensOutput": 4823,
-            "tokensCacheRead": 91200,
-            "tokensCacheWrite": 37340,
-            "estimatedCostUsd": 0.42,
-            "elapsedSeconds": 167,
+            "policy": "fortify-aa-default.properties (policy: default)",
+            "configuration": {
+              "agent": "pi",
+              "analysis.effort": "high",
+              "analysis.enabled": "true",
+              "analysis.maxbatchsize": "30",
+              "analysis.maxconcurrency": "16",
+              "analysis.minbatchsize": "3",
+              "analysis.model.context": "default",
+              "analysis.model.family": "sonnet",
+              "analysis.model.version": "latest",
+              "analysis.prefetch.enabled": "false",
+              "analysis.prefetch.maxfiles": "8",
+              "analysis.samples": "1",
+              "files.excludedirs": ".git, .hg, .svn, node_modules, bower_components, vendor, target, build, dist, out, bin, obj, .gradle, .mvn, .idea, .vscode, venv, .venv, __pycache__, .next, .nuxt, coverage, .terraform, .cache",
+              "files.excludeextensions": "png, jpg, jpeg, gif, svg, ico, webp, bmp, tiff, woff, woff2, ttf, eot, otf, mp4, mp3, wav, avi, mov, webm, flac, zip, tar, gz, tgz, bz2, xz, rar, 7z, jar, war, ear, exe, dll, so, dylib, bin, o, a, class, pyc, wasm, node, pdf, doc, docx, xls, xlsx, ppt, pptx, bat, cmd, map, lock, min fpr, sarif",
+              "files.excludegitignored": "true",
+              "files.excludenames": "*.min.js, *.min.css, package-lock.json, yarn.lock, pnpm-lock.yaml, gemfile.lock, poetry.lock, cargo.lock, go.sum, mvnw, gradlew, .git, .hg, .svn",
+              "files.maxbytes": "1000000",
+              "maxcost": "50",
+              "output.transcripts": "false",
+              "pi.provider": "auto",
+              "plan.batchsize": "25",
+              "plan.effort": "medium",
+              "plan.enabled": "true",
+              "plan.maxconcurrency": "16",
+              "plan.model.context": "default",
+              "plan.model.family": "haiku",
+              "plan.model.version": "latest",
+              "validation.effort": "medium",
+              "validation.enabled": "true",
+              "validation.maxbucketsize": "40",
+              "validation.maxconcurrency": "8",
+              "validation.model.context": "default",
+              "validation.model.family": "opus",
+              "validation.model.version": "latest"
+            },
+            "fpr": "H:\\faa_product\\testprojects\\insecureforum.fpr",
+            "messageFormat": "fod",
+            "latin1": true,
+            "tokensInput": 491930,
+            "tokensOutput": 50610,
+            "tokensCacheRead": 90340,
+            "tokensCacheWrite": 31222,
+            "estimatedCostUsd": 3.5340605,
+            "elapsedSeconds": 332,
             "stages": {
               "plan": {
-                "models": ["us.anthropic.claude-haiku-4-5"],
-                "tokensInput": 9200,
-                "tokensOutput": 410,
+                "models": [
+                  "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+                ],
+                "tokensInput": 11176,
+                "tokensOutput": 4277,
                 "tokensCacheRead": 0,
                 "tokensCacheWrite": 0,
-                "estimatedCostUsd": 0.02,
-                "llmSeconds": 8
+                "estimatedCostUsd": 0.032561,
+                "llmSeconds": 38
               },
               "analysis": {
-                "models": ["us.anthropic.claude-sonnet-4-5"],
-                "tokensInput": 104200,
-                "tokensOutput": 3900,
-                "tokensCacheRead": 82100,
-                "tokensCacheWrite": 34000,
-                "estimatedCostUsd": 0.34,
-                "llmSeconds": 240
+                "models": [
+                  "us.anthropic.claude-sonnet-5"
+                ],
+                "tokensInput": 480744,
+                "tokensOutput": 35613,
+                "tokensCacheRead": 0,
+                "tokensCacheWrite": 0,
+                "estimatedCostUsd": 1.9764270000000002,
+                "llmSeconds": 464
               },
               "validation": {
-                "models": ["us.anthropic.claude-sonnet-4-5"],
-                "tokensInput": 15140,
-                "tokensOutput": 513,
-                "tokensCacheRead": 9100,
-                "tokensCacheWrite": 3340,
-                "estimatedCostUsd": 0.06,
-                "llmSeconds": 46
+                "models": [
+                  "us.anthropic.claude-opus-4-8"
+                ],
+                "tokensInput": 10,
+                "tokensOutput": 10720,
+                "tokensCacheRead": 90340,
+                "tokensCacheWrite": 31222,
+                "estimatedCostUsd": 1.5250725,
+                "llmSeconds": 156
               }
             },
             "files": {
-              "considered": 37,
-              "inScope": 21,
-              "analyzed": 21
+              "considered": 22,
+              "inScope": 22,
+              "analyzed": 22
             },
             "analyzedFiles": [
+              ".github/workflows/codeql-analysis.yml",
+              "Dockerfile",
+              "pom.xml",
+              "src/main/java/com/example/insecureforum/ForumApplication.java",
+              "src/main/java/com/example/insecureforum/database/MessageDAO.java",
+              "src/main/java/com/example/insecureforum/database/MessageDetailDTO.java",
+              "src/main/java/com/example/insecureforum/database/MessageSummaryDTO.java",
+              "src/main/java/com/example/insecureforum/database/UserDAO.java",
               "src/main/java/com/example/insecureforum/web/AuthenticationController.java",
               "src/main/java/com/example/insecureforum/web/AuthenticationFilter.java",
-              "src/main/java/com/example/insecureforum/web/MessageController.java"
+              "src/main/java/com/example/insecureforum/web/HomeController.java",
+              "src/main/java/com/example/insecureforum/web/MessageController.java",
+              "src/main/resources/application.properties",
+              "src/main/resources/db/migration/V1__init.sql",
+              "src/main/resources/static/js/login.js",
+              "src/main/resources/static/js/navbar.js",
+              "src/main/webapp/WEB-INF/tags/pagetemplate.tag",
+              "src/main/webapp/WEB-INF/views/auth/login.jsp",
+              "src/main/webapp/WEB-INF/views/messages/compose.jsp",
+              "src/main/webapp/WEB-INF/views/messages/list.jsp",
+              "src/main/webapp/WEB-INF/views/messages/read.jsp",
+              "test.sh"
             ]
           }
         }
       ],
       "results": [
         {
-          "ruleId": "often-misused/authentication/3DD14DE38594C51AEAB9A46DF2EB085F",
+          "ruleId": "password-management/2A8F3E93A0D036B12B789AB6AEFD697E",
           "level": "error",
           "message": {
-            "text": "Login state is decided solely by the presence of an unsigned, client-controlled 'user' cookie, so anyone can forge it to bypass authentication.",
-            "markdown": "Login state is decided solely by the presence of an unsigned, client-controlled 'user' cookie, so anyone can forge it to bypass authentication."
+            "text": "Users table stores passwords in plaintext with no hashing column/algorithm",
+            "markdown": "Users table stores passwords in plaintext with no hashing column/algorithm"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src/main/java/com/example/insecureforum/web/AuthenticationFilter.java"
+                  "uri": "src/main/resources/db/migration/V1__init.sql"
                 },
                 "region": {
-                  "startLine": 44,
-                  "endLine": 44,
+                  "startLine": 4,
+                  "endLine": 4,
                   "snippet": {
-                    "text": "        boolean loggedIn = cookies != null && stream(cookies).anyMatch(c -> \"user\".equals(c.getName()));"
+                    "text": "  password VARCHAR(255)"
                   }
                 },
                 "contextRegion": {
-                  "startLine": 34,
-                  "endLine": 54,
+                  "startLine": 1,
+                  "endLine": 14,
                   "snippet": {
-                    "text": "    public void init(FilterConfig filterConfig) {\n        logger.info(\"AuthenticationFilter initialized\");\n    }\n\n    @Override\n    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {\n        HttpServletRequest httpReq = (HttpServletRequest)request;\n        HttpServletResponse httpResp = (HttpServletResponse)response;\n        String path = httpReq.getServletPath();\n        Cookie[] cookies = httpReq.getCookies();\n        boolean loggedIn = cookies != null && stream(cookies).anyMatch(c -> \"user\".equals(c.getName()));\n        httpReq.setAttribute(\"loggedIn\", loggedIn);\n        if(whitelist.test(path)) {\n            logger.debug(\"Path {} matches whitelist, allowing\", path);\n            chain.doFilter(request, response);\n        } else {\n            logger.debug(\"Path {} requires login, loggedIn={}\", path, loggedIn);\n            if(loggedIn) {\n                chain.doFilter(request, response);\n            } else {\n                httpResp.sendRedirect(httpReq.getContextPath() + \"/login\");"
+                    "text": "CREATE TABLE users (\n  id BIGINT AUTO_INCREMENT,\n  username VARCHAR(255),\n  password VARCHAR(255)\n);\n\nINSERT INTO users\n  (username, password)\nVALUES\n  ('****', '****'),\n  ('****', '****'),\n  ('****', '****');\n\nCREATE TABLE messages ("
                   }
                 }
               }
@@ -149,16 +496,18 @@
                   "locations": [
                     {
                       "location": {
-                        "message": { "text": "Issue (line 44)" },
+                        "message": {
+                          "text": "Issue (line 4)"
+                        },
                         "physicalLocation": {
                           "artifactLocation": {
-                            "uri": "src/main/java/com/example/insecureforum/web/AuthenticationFilter.java"
+                            "uri": "src/main/resources/db/migration/V1__init.sql"
                           },
                           "region": {
-                            "startLine": 34,
-                            "endLine": 54,
+                            "startLine": 1,
+                            "endLine": 14,
                             "snippet": {
-                              "text": "    public void init(FilterConfig filterConfig) {\n        logger.info(\"AuthenticationFilter initialized\");\n    }\n\n    @Override\n    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {\n        HttpServletRequest httpReq = (HttpServletRequest)request;\n        HttpServletResponse httpResp = (HttpServletResponse)response;\n        String path = httpReq.getServletPath();\n        Cookie[] cookies = httpReq.getCookies();\n        boolean loggedIn = cookies != null && stream(cookies).anyMatch(c -> \"user\".equals(c.getName()));\n        httpReq.setAttribute(\"loggedIn\", loggedIn);\n        if(whitelist.test(path)) {\n            logger.debug(\"Path {} matches whitelist, allowing\", path);\n            chain.doFilter(request, response);\n        } else {\n            logger.debug(\"Path {} requires login, loggedIn={}\", path, loggedIn);\n            if(loggedIn) {\n                chain.doFilter(request, response);\n            } else {\n                httpResp.sendRedirect(httpReq.getContextPath() + \"/login\");"
+                              "text": "CREATE TABLE users (\n  id BIGINT AUTO_INCREMENT,\n  username VARCHAR(255),\n  password VARCHAR(255)\n);\n\nINSERT INTO users\n  (username, password)\nVALUES\n  ('****', '****'),\n  ('****', '****'),\n  ('****', '****');\n\nCREATE TABLE messages ("
                             }
                           }
                         }
@@ -170,27 +519,552 @@
             }
           ],
           "fingerprints": {
-            "fortify/instance-id": "3DD14DE38594C51AEAB9A46DF2EB085F"
+            "fortify/instance-id": "2A8F3E93A0D036B12B789AB6AEFD697E"
           },
           "partialFingerprints": {
-            "fortify/path/v1": "src/main/java/com/example/insecureforum/web/authenticationfilter.java",
-            "fortify/category/v1": "Often Misused",
-            "fortify/line/v1": "44",
-            "fortify/sinkHash/v1": "DA7E38507300DBC07800C5B819B34039"
+            "fortify/path/v1": "src/main/resources/db/migration/v1__init.sql",
+            "fortify/category/v1": "Password Management",
+            "fortify/line/v1": "4",
+            "fortify/sinkHash/v1": "822267742191040F4A229759BB3846B5"
           },
           "properties": {
-            "impact": 4.0,
-            "likelihood": 4.0,
+            "impact": 3,
+            "likelihood": 2.5,
             "fortify-severity": "Critical",
-            "remediationSummary": "Track the authenticated user in a server-side HttpSession instead of trusting a client-side cookie."
+            "remediationSummary": "Hash passwords (bcrypt/argon2) before storage instead of using a plain VARCHAR password column with plaintext seed values."
+          }
+        },
+        {
+          "ruleId": "password-management/75116853BA208F123BCABE61D460C5AA",
+          "level": "error",
+          "message": {
+            "text": "Seeded accounts use trivial username-matching passwords (**<strong>/</strong><strong>, </strong><strong>/</strong><strong>, </strong><strong>/</strong>**)",
+            "markdown": "Seeded accounts use trivial username-matching passwords (****/****, ****/****, ****/****)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/resources/db/migration/V1__init.sql"
+                },
+                "region": {
+                  "startLine": 10,
+                  "endLine": 10,
+                  "snippet": {
+                    "text": "  ('****', '****'),"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 1,
+                  "endLine": 20,
+                  "snippet": {
+                    "text": "CREATE TABLE users (\n  id BIGINT AUTO_INCREMENT,\n  username VARCHAR(255),\n  password VARCHAR(255)\n);\n\nINSERT INTO users\n  (username, password)\nVALUES\n  ('****', '****'),\n  ('****', '****'),\n  ('****', '****');\n\nCREATE TABLE messages (\n  id BIGINT AUTO_INCREMENT,\n  author VARCHAR(255),\n  subject VARCHAR(255),\n  body CLOB,\n  timestamp TIMESTAMP\n);"
+                  }
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": {
+                          "text": "Issue (line 10)"
+                        },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "src/main/resources/db/migration/V1__init.sql"
+                          },
+                          "region": {
+                            "startLine": 1,
+                            "endLine": 20,
+                            "snippet": {
+                              "text": "CREATE TABLE users (\n  id BIGINT AUTO_INCREMENT,\n  username VARCHAR(255),\n  password VARCHAR(255)\n);\n\nINSERT INTO users\n  (username, password)\nVALUES\n  ('****', '****'),\n  ('****', '****'),\n  ('****', '****');\n\nCREATE TABLE messages (\n  id BIGINT AUTO_INCREMENT,\n  author VARCHAR(255),\n  subject VARCHAR(255),\n  body CLOB,\n  timestamp TIMESTAMP\n);"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "75116853BA208F123BCABE61D460C5AA"
+          },
+          "partialFingerprints": {
+            "fortify/path/v1": "src/main/resources/db/migration/v1__init.sql",
+            "fortify/category/v1": "Password Management",
+            "fortify/line/v1": "10",
+            "fortify/sinkHash/v1": "86504E3F3906B2BC3E256AE1D796D02B"
+          },
+          "properties": {
+            "impact": 3,
+            "likelihood": 4.5,
+            "fortify-severity": "Critical",
+            "remediationSummary": "Do not seed accounts with trivial/predictable passwords; require rotation or random generation before deployment."
+          }
+        },
+        {
+          "ruleId": "cross-site-scripting/reflected/3367D21BCDB5E8735ABCB527DAB3EBEA",
+          "level": "error",
+          "message": {
+            "text": "Reflected XSS via unescaped ${prefillUsername} in login error message",
+            "markdown": "Reflected XSS via unescaped ${prefillUsername} in login error message"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/webapp/WEB-INF/views/auth/login.jsp"
+                },
+                "region": {
+                  "startLine": 14,
+                  "endLine": 14,
+                  "snippet": {
+                    "text": "                            <p class=\"subtitle has-text-danger\">Authentication failed for user ${prefillUsername}, please retry</p>"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 4,
+                  "endLine": 24,
+                  "snippet": {
+                    "text": "<t:pagetemplate>\n    <form action=\"./login\" method=\"post\">\n        <section class=\"hero\">\n            <div class=\"hero-body\">\n                <div class=\"container has-text-centered\">\n                    <div class=\"column is-6 is-offset-3\">\n                        <c:if test=\"${!authenticationFailed}\">\n                            <p class=\"subtitle has-text-grey\">Please login to access the forum</p>\n                        </c:if>\n                        <c:if test=\"${authenticationFailed}\">\n                            <p class=\"subtitle has-text-danger\">Authentication failed for user ${prefillUsername}, please retry</p>\n                        </c:if>\n                        <div class=\"box\">\n                            <div class=\"field\">\n                                <div class=\"control has-icons-left\">\n                                    <input name=\"username\" class=\"input is-large\" type=\"text\"\n                                           placeholder=\"Username\" autofocus=\"\" value=\"${prefillUsername}\">\n                                    <span class=\"icon is-large is-left\">\n                                        <i class=\"fas fa-user\"></i>\n                                    </span>\n                                </div>"
+                  }
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": {
+                          "text": "Issue (line 14)"
+                        },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "src/main/webapp/WEB-INF/views/auth/login.jsp"
+                          },
+                          "region": {
+                            "startLine": 4,
+                            "endLine": 24,
+                            "snippet": {
+                              "text": "<t:pagetemplate>\n    <form action=\"./login\" method=\"post\">\n        <section class=\"hero\">\n            <div class=\"hero-body\">\n                <div class=\"container has-text-centered\">\n                    <div class=\"column is-6 is-offset-3\">\n                        <c:if test=\"${!authenticationFailed}\">\n                            <p class=\"subtitle has-text-grey\">Please login to access the forum</p>\n                        </c:if>\n                        <c:if test=\"${authenticationFailed}\">\n                            <p class=\"subtitle has-text-danger\">Authentication failed for user ${prefillUsername}, please retry</p>\n                        </c:if>\n                        <div class=\"box\">\n                            <div class=\"field\">\n                                <div class=\"control has-icons-left\">\n                                    <input name=\"username\" class=\"input is-large\" type=\"text\"\n                                           placeholder=\"Username\" autofocus=\"\" value=\"${prefillUsername}\">\n                                    <span class=\"icon is-large is-left\">\n                                        <i class=\"fas fa-user\"></i>\n                                    </span>\n                                </div>"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "3367D21BCDB5E8735ABCB527DAB3EBEA"
+          },
+          "partialFingerprints": {
+            "fortify/path/v1": "src/main/webapp/web-inf/views/auth/login.jsp",
+            "fortify/category/v1": "Cross-Site Scripting",
+            "fortify/line/v1": "14",
+            "fortify/sinkHash/v1": "4286EEB72EF4BF6D91DFE3A4DD36644E"
+          },
+          "properties": {
+            "impact": 3.5,
+            "likelihood": 4,
+            "fortify-severity": "Critical",
+            "remediationSummary": "HTML-escape prefillUsername (e.g. via c:out or fn:escapeXml) before rendering it in the page."
+          }
+        },
+        {
+          "ruleId": "cross-site-scripting/reflected/AB6FF6B2B45E91E57A6436079A12D4AC",
+          "level": "error",
+          "message": {
+            "text": "Reflected XSS via unescaped ${prefillUsername} injected into HTML attribute value",
+            "markdown": "Reflected XSS via unescaped ${prefillUsername} injected into HTML attribute value"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/webapp/WEB-INF/views/auth/login.jsp"
+                },
+                "region": {
+                  "startLine": 20,
+                  "endLine": 20,
+                  "snippet": {
+                    "text": "                                           placeholder=\"Username\" autofocus=\"\" value=\"${prefillUsername}\">"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 10,
+                  "endLine": 30,
+                  "snippet": {
+                    "text": "                        <c:if test=\"${!authenticationFailed}\">\n                            <p class=\"subtitle has-text-grey\">Please login to access the forum</p>\n                        </c:if>\n                        <c:if test=\"${authenticationFailed}\">\n                            <p class=\"subtitle has-text-danger\">Authentication failed for user ${prefillUsername}, please retry</p>\n                        </c:if>\n                        <div class=\"box\">\n                            <div class=\"field\">\n                                <div class=\"control has-icons-left\">\n                                    <input name=\"username\" class=\"input is-large\" type=\"text\"\n                                           placeholder=\"Username\" autofocus=\"\" value=\"${prefillUsername}\">\n                                    <span class=\"icon is-large is-left\">\n                                        <i class=\"fas fa-user\"></i>\n                                    </span>\n                                </div>\n                            </div>\n                            <div class=\"field\">\n                                <div class=\"control has-icons-left\">\n                                    <input name=\"password\" class=\"input is-large\" type=\"password\"\n                                           placeholder=\"Password\" id=\"pwdInputField\">\n                                    <a class=\"icon is-large is-left\">"
+                  }
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": {
+                          "text": "Issue (line 20)"
+                        },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "src/main/webapp/WEB-INF/views/auth/login.jsp"
+                          },
+                          "region": {
+                            "startLine": 10,
+                            "endLine": 30,
+                            "snippet": {
+                              "text": "                        <c:if test=\"${!authenticationFailed}\">\n                            <p class=\"subtitle has-text-grey\">Please login to access the forum</p>\n                        </c:if>\n                        <c:if test=\"${authenticationFailed}\">\n                            <p class=\"subtitle has-text-danger\">Authentication failed for user ${prefillUsername}, please retry</p>\n                        </c:if>\n                        <div class=\"box\">\n                            <div class=\"field\">\n                                <div class=\"control has-icons-left\">\n                                    <input name=\"username\" class=\"input is-large\" type=\"text\"\n                                           placeholder=\"Username\" autofocus=\"\" value=\"${prefillUsername}\">\n                                    <span class=\"icon is-large is-left\">\n                                        <i class=\"fas fa-user\"></i>\n                                    </span>\n                                </div>\n                            </div>\n                            <div class=\"field\">\n                                <div class=\"control has-icons-left\">\n                                    <input name=\"password\" class=\"input is-large\" type=\"password\"\n                                           placeholder=\"Password\" id=\"pwdInputField\">\n                                    <a class=\"icon is-large is-left\">"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "AB6FF6B2B45E91E57A6436079A12D4AC"
+          },
+          "partialFingerprints": {
+            "fortify/path/v1": "src/main/webapp/web-inf/views/auth/login.jsp",
+            "fortify/category/v1": "Cross-Site Scripting",
+            "fortify/line/v1": "20",
+            "fortify/sinkHash/v1": "5DAE93035F4B3834C24E751CEE8AADB4"
+          },
+          "properties": {
+            "impact": 3.5,
+            "likelihood": 4,
+            "fortify-severity": "Critical",
+            "remediationSummary": "HTML-escape prefillUsername before placing it inside the input value attribute."
+          }
+        },
+        {
+          "ruleId": "cross-site-scripting/persistent/7FB75AE1005C830DC71ECD90B75C4BC2",
+          "level": "error",
+          "message": {
+            "text": "Stored XSS via unescaped message subject rendered in forum message list",
+            "markdown": "Stored XSS via unescaped message subject rendered in forum message list"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/webapp/WEB-INF/views/messages/list.jsp"
+                },
+                "region": {
+                  "startLine": 19,
+                  "endLine": 19,
+                  "snippet": {
+                    "text": "                                        <h4>${msg.subject}</h4>"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 9,
+                  "endLine": 29,
+                  "snippet": {
+                    "text": "                    <a class=\"button is-primary is-medium is-fullwidth\" href=\"./compose\">\n                        <span class=\"icon is-small\"><i class=\"fas fa-pen\"></i></span>\n                        <span>New Post</span>\n                    </a>\n                </div>\n                <div class=\"column is-9\">\n                    <div class=\"box content\">\n                        <c:forEach items=\"${messages}\" var=\"msg\">\n                                <article>\n                                    <a href=\"./read/${msg.id}\">\n                                        <h4>${msg.subject}</h4>\n                                        <div class=\"media\">\n                                            <div class=\"media-left\">\n                                                <i class=\"fab fa-readme\"></i>\n                                            </div>\n                                            <div class=\"media-content\">\n                                                <div class=\"content\">\n                                                    by ${msg.author} on ${msg.timestamp}\n                                                </div>\n                                            </div>\n                                        </div>"
+                  }
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": {
+                          "text": "Issue (line 19)"
+                        },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "src/main/webapp/WEB-INF/views/messages/list.jsp"
+                          },
+                          "region": {
+                            "startLine": 9,
+                            "endLine": 29,
+                            "snippet": {
+                              "text": "                    <a class=\"button is-primary is-medium is-fullwidth\" href=\"./compose\">\n                        <span class=\"icon is-small\"><i class=\"fas fa-pen\"></i></span>\n                        <span>New Post</span>\n                    </a>\n                </div>\n                <div class=\"column is-9\">\n                    <div class=\"box content\">\n                        <c:forEach items=\"${messages}\" var=\"msg\">\n                                <article>\n                                    <a href=\"./read/${msg.id}\">\n                                        <h4>${msg.subject}</h4>\n                                        <div class=\"media\">\n                                            <div class=\"media-left\">\n                                                <i class=\"fab fa-readme\"></i>\n                                            </div>\n                                            <div class=\"media-content\">\n                                                <div class=\"content\">\n                                                    by ${msg.author} on ${msg.timestamp}\n                                                </div>\n                                            </div>\n                                        </div>"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "7FB75AE1005C830DC71ECD90B75C4BC2"
+          },
+          "partialFingerprints": {
+            "fortify/path/v1": "src/main/webapp/web-inf/views/messages/list.jsp",
+            "fortify/category/v1": "Cross-Site Scripting",
+            "fortify/line/v1": "19",
+            "fortify/sinkHash/v1": "A5338A367E821E0645BA510AC7F5BD29"
+          },
+          "properties": {
+            "impact": 4,
+            "likelihood": 4,
+            "fortify-severity": "Critical",
+            "remediationSummary": "Use c:out/escapeXml to HTML-escape msg.subject, msg.author and msg.timestamp before rendering."
+          }
+        },
+        {
+          "ruleId": "cross-site-scripting/persistent/3C8BB7B76273D76C70F3B01E6B93DE4E",
+          "level": "error",
+          "message": {
+            "text": "Stored XSS via unescaped msg.author (and timestamp) rendered in forum message list",
+            "markdown": "Stored XSS via unescaped msg.author (and timestamp) rendered in forum message list"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/webapp/WEB-INF/views/messages/list.jsp"
+                },
+                "region": {
+                  "startLine": 26,
+                  "endLine": 26,
+                  "snippet": {
+                    "text": "                                                    by ${msg.author} on ${msg.timestamp}"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 16,
+                  "endLine": 36,
+                  "snippet": {
+                    "text": "                        <c:forEach items=\"${messages}\" var=\"msg\">\n                                <article>\n                                    <a href=\"./read/${msg.id}\">\n                                        <h4>${msg.subject}</h4>\n                                        <div class=\"media\">\n                                            <div class=\"media-left\">\n                                                <i class=\"fab fa-readme\"></i>\n                                            </div>\n                                            <div class=\"media-content\">\n                                                <div class=\"content\">\n                                                    by ${msg.author} on ${msg.timestamp}\n                                                </div>\n                                            </div>\n                                        </div>\n                                    </a>\n                                </article>\n                        </c:forEach>\n                    </div>\n                </div>\n            </div>\n        </div>"
+                  }
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": {
+                          "text": "Issue (line 26)"
+                        },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "src/main/webapp/WEB-INF/views/messages/list.jsp"
+                          },
+                          "region": {
+                            "startLine": 16,
+                            "endLine": 36,
+                            "snippet": {
+                              "text": "                        <c:forEach items=\"${messages}\" var=\"msg\">\n                                <article>\n                                    <a href=\"./read/${msg.id}\">\n                                        <h4>${msg.subject}</h4>\n                                        <div class=\"media\">\n                                            <div class=\"media-left\">\n                                                <i class=\"fab fa-readme\"></i>\n                                            </div>\n                                            <div class=\"media-content\">\n                                                <div class=\"content\">\n                                                    by ${msg.author} on ${msg.timestamp}\n                                                </div>\n                                            </div>\n                                        </div>\n                                    </a>\n                                </article>\n                        </c:forEach>\n                    </div>\n                </div>\n            </div>\n        </div>"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "3C8BB7B76273D76C70F3B01E6B93DE4E"
+          },
+          "partialFingerprints": {
+            "fortify/path/v1": "src/main/webapp/web-inf/views/messages/list.jsp",
+            "fortify/category/v1": "Cross-Site Scripting",
+            "fortify/line/v1": "26",
+            "fortify/sinkHash/v1": "FEFE8363942FE902FCBDE71C671982D1"
+          },
+          "properties": {
+            "impact": 4,
+            "likelihood": 3.5,
+            "fortify-severity": "Critical",
+            "remediationSummary": "HTML-escape msg.author and msg.timestamp with c:out before rendering."
+          }
+        },
+        {
+          "ruleId": "cross-site-scripting/persistent/6B34CFED4635C63891FA5A9A1B3A7EB8",
+          "level": "error",
+          "message": {
+            "text": "Stored XSS: message subject rendered via unescaped EL in read.jsp",
+            "markdown": "Stored XSS: message subject rendered via unescaped EL in read.jsp"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/webapp/WEB-INF/views/messages/read.jsp"
+                },
+                "region": {
+                  "startLine": 17,
+                  "endLine": 17,
+                  "snippet": {
+                    "text": "                            <h4>${msg.subject}</h4>"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 7,
+                  "endLine": 27,
+                  "snippet": {
+                    "text": "            <div class=\"columns\">\n                <div class=\"column is-3\">\n                    <a class=\"button is-medium is-fullwidth\" href=\"../list\">\n                        <span class=\"icon is-small\"><i class=\"fas fa-arrow-left\"></i></span>\n                        <span>Back</span>\n                    </a>\n                </div>\n                <div class=\"column is-9\">\n                    <div class=\"box content\">\n                        <article class=\"readheader\">\n                            <h4>${msg.subject}</h4>\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        by ${msg.author} on ${msg.timestamp}\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                        <article>\n                            <div class=\"media\">"
+                  }
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": {
+                          "text": "Issue (line 17)"
+                        },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "src/main/webapp/WEB-INF/views/messages/read.jsp"
+                          },
+                          "region": {
+                            "startLine": 7,
+                            "endLine": 27,
+                            "snippet": {
+                              "text": "            <div class=\"columns\">\n                <div class=\"column is-3\">\n                    <a class=\"button is-medium is-fullwidth\" href=\"../list\">\n                        <span class=\"icon is-small\"><i class=\"fas fa-arrow-left\"></i></span>\n                        <span>Back</span>\n                    </a>\n                </div>\n                <div class=\"column is-9\">\n                    <div class=\"box content\">\n                        <article class=\"readheader\">\n                            <h4>${msg.subject}</h4>\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        by ${msg.author} on ${msg.timestamp}\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                        <article>\n                            <div class=\"media\">"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "6B34CFED4635C63891FA5A9A1B3A7EB8"
+          },
+          "partialFingerprints": {
+            "fortify/path/v1": "src/main/webapp/web-inf/views/messages/read.jsp",
+            "fortify/category/v1": "Cross-Site Scripting",
+            "fortify/line/v1": "17",
+            "fortify/sinkHash/v1": "A5338A367E821E0645BA510AC7F5BD29"
+          },
+          "properties": {
+            "impact": 3.8,
+            "likelihood": 4,
+            "fortify-severity": "Critical",
+            "remediationSummary": "Escape msg.subject with c:out or another HTML-encoding mechanism before rendering."
+          }
+        },
+        {
+          "ruleId": "cross-site-scripting/persistent/213957AFEE2E408E5B242E96370EDF42",
+          "level": "error",
+          "message": {
+            "text": "Stored XSS: message author rendered via unescaped EL in read.jsp, sourced from an attacker-controlled cookie",
+            "markdown": "Stored XSS: message author rendered via unescaped EL in read.jsp, sourced from an attacker-controlled cookie"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/webapp/WEB-INF/views/messages/read.jsp"
+                },
+                "region": {
+                  "startLine": 21,
+                  "endLine": 21,
+                  "snippet": {
+                    "text": "                                        by ${msg.author} on ${msg.timestamp}"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 11,
+                  "endLine": 31,
+                  "snippet": {
+                    "text": "                        <span>Back</span>\n                    </a>\n                </div>\n                <div class=\"column is-9\">\n                    <div class=\"box content\">\n                        <article class=\"readheader\">\n                            <h4>${msg.subject}</h4>\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        by ${msg.author} on ${msg.timestamp}\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                        <article>\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        ${msg.body}\n                                    </div>"
+                  }
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": {
+                          "text": "Issue (line 21)"
+                        },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "src/main/webapp/WEB-INF/views/messages/read.jsp"
+                          },
+                          "region": {
+                            "startLine": 11,
+                            "endLine": 31,
+                            "snippet": {
+                              "text": "                        <span>Back</span>\n                    </a>\n                </div>\n                <div class=\"column is-9\">\n                    <div class=\"box content\">\n                        <article class=\"readheader\">\n                            <h4>${msg.subject}</h4>\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        by ${msg.author} on ${msg.timestamp}\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                        <article>\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        ${msg.body}\n                                    </div>"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "213957AFEE2E408E5B242E96370EDF42"
+          },
+          "partialFingerprints": {
+            "fortify/path/v1": "src/main/webapp/web-inf/views/messages/read.jsp",
+            "fortify/category/v1": "Cross-Site Scripting",
+            "fortify/line/v1": "21",
+            "fortify/sinkHash/v1": "FEFE8363942FE902FCBDE71C671982D1"
+          },
+          "properties": {
+            "impact": 3.8,
+            "likelihood": 4,
+            "fortify-severity": "Critical",
+            "remediationSummary": "Escape msg.author with c:out and validate the \"user\" cookie value before storing it."
           }
         },
         {
           "ruleId": "cross-site-scripting/persistent/CFE4E750668A04EB465124ADB05C2FD8",
           "level": "error",
           "message": {
-            "text": "User-submitted message bodies are stored unsanitized and rendered unescaped in read.jsp, so injected scripts persist and execute for every viewer.",
-            "markdown": "User-submitted message bodies are stored unsanitized and rendered unescaped in read.jsp, so injected scripts persist and execute for every viewer."
+            "text": "Stored XSS: message body rendered via unescaped EL in read.jsp",
+            "markdown": "Stored XSS: message body rendered via unescaped EL in read.jsp"
           },
           "locations": [
             {
@@ -209,7 +1083,7 @@
                   "startLine": 20,
                   "endLine": 40,
                   "snippet": {
-                    "text": "                                        <strong>${msg.author}</strong>\n                                        <em>${msg.postedAt}</em>\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                        <article>\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        ${msg.body}\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                    </div>\n                </div>\n            </section>\n\n            <footer class=\"footer\">\n                <div class=\"content has-text-centered\">"
+                    "text": "                                    <div class=\"content\">\n                                        by ${msg.author} on ${msg.timestamp}\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                        <article>\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        ${msg.body}\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </section>\n</t:pagetemplate>"
                   }
                 }
               }
@@ -222,7 +1096,9 @@
                   "locations": [
                     {
                       "location": {
-                        "message": { "text": "Issue (line 30)" },
+                        "message": {
+                          "text": "Issue (line 30)"
+                        },
                         "physicalLocation": {
                           "artifactLocation": {
                             "uri": "src/main/webapp/WEB-INF/views/messages/read.jsp"
@@ -231,7 +1107,7 @@
                             "startLine": 20,
                             "endLine": 40,
                             "snippet": {
-                              "text": "                                        <strong>${msg.author}</strong>\n                                        <em>${msg.postedAt}</em>\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                        <article>\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        ${msg.body}\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                    </div>\n                </div>\n            </section>\n\n            <footer class=\"footer\">\n                <div class=\"content has-text-centered\">"
+                              "text": "                                    <div class=\"content\">\n                                        by ${msg.author} on ${msg.timestamp}\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                        <article>\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <div class=\"content\">\n                                        ${msg.body}\n                                    </div>\n                                </div>\n                            </div>\n                        </article>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </section>\n</t:pagetemplate>"
                             }
                           }
                         }
@@ -252,10 +1128,460 @@
             "fortify/sinkHash/v1": "A3EE9294A5235B2E43001933FA8BEE22"
           },
           "properties": {
-            "impact": 4.0,
-            "likelihood": 2.0,
-            "fortify-severity": "High",
-            "remediationSummary": "HTML-encode output (e.g. JSTL c:out) and sanitize input with an allowlist before storing."
+            "impact": 3.8,
+            "likelihood": 4,
+            "fortify-severity": "Critical",
+            "remediationSummary": "Escape msg.body with c:out (or a sanitizer) before rendering into the page."
+          }
+        },
+        {
+          "ruleId": "dockerfile-misconfiguration/661E4F6E613F1137ED5399F6DD303C21",
+          "level": "note",
+          "message": {
+            "text": "Dockerfile does not drop root privileges: application container runs as root by default",
+            "markdown": "Dockerfile does not drop root privileges: application container runs as root by default"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Dockerfile"
+                },
+                "region": {
+                  "startLine": 1,
+                  "endLine": 1,
+                  "snippet": {
+                    "text": "FROM openjdk:8-jre"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 1,
+                  "endLine": 4,
+                  "snippet": {
+                    "text": "FROM openjdk:8-jre\nENTRYPOINT [\"java\", \"-jar\", \"/usr/share/insecureforum-0.0.1-SNAPSHOT.war\"]\nADD target/insecureforum-0.0.1-SNAPSHOT.war /usr/share/insecureforum-0.0.1-SNAPSHOT.war\n"
+                  }
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": {
+                          "text": "Issue (line 1)"
+                        },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "Dockerfile"
+                          },
+                          "region": {
+                            "startLine": 1,
+                            "endLine": 4,
+                            "snippet": {
+                              "text": "FROM openjdk:8-jre\nENTRYPOINT [\"java\", \"-jar\", \"/usr/share/insecureforum-0.0.1-SNAPSHOT.war\"]\nADD target/insecureforum-0.0.1-SNAPSHOT.war /usr/share/insecureforum-0.0.1-SNAPSHOT.war\n"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "661E4F6E613F1137ED5399F6DD303C21"
+          },
+          "partialFingerprints": {
+            "fortify/path/v1": "dockerfile",
+            "fortify/category/v1": "Dockerfile Misconfiguration",
+            "fortify/line/v1": "1",
+            "fortify/sinkHash/v1": "9A882668D296E930C23896B24B3150B4"
+          },
+          "properties": {
+            "impact": 2,
+            "likelihood": 2,
+            "fortify-severity": "Low",
+            "remediationSummary": "Add a non-root USER directive before ENTRYPOINT so the container does not run as root."
+          }
+        },
+        {
+          "ruleId": "privacy-violation/E1403836ED13390CD14F4B4BFFB060CF",
+          "level": "error",
+          "message": {
+            "text": "DEBUG-level SQL logging bean logs plaintext credentials and other sensitive query data",
+            "markdown": "DEBUG-level SQL logging bean logs plaintext credentials and other sensitive query data"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/example/insecureforum/ForumApplication.java"
+                },
+                "region": {
+                  "startLine": 23,
+                  "endLine": 23,
+                  "snippet": {
+                    "text": "                .logQueryBySlf4j(SLF4JLogLevel.DEBUG, \"com.example.insecureforum.jdbc\").build();"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 13,
+                  "endLine": 28,
+                  "snippet": {
+                    "text": "public class ForumApplication {\n\n    public static void main(String[] args) {\n        SpringApplication.run(ForumApplication.class, args);\n    }\n\n    @Bean\n    public JdbcTemplate jdbcTemplate(DataSource dataSource) {\n        DataSource loggingDataSource = ProxyDataSourceBuilder\n                .create(dataSource)\n                .logQueryBySlf4j(SLF4JLogLevel.DEBUG, \"com.example.insecureforum.jdbc\").build();\n        return new JdbcTemplate(loggingDataSource);\n    }\n\n}\n"
+                  }
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": {
+                          "text": "Issue (line 23)"
+                        },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "src/main/java/com/example/insecureforum/ForumApplication.java"
+                          },
+                          "region": {
+                            "startLine": 13,
+                            "endLine": 28,
+                            "snippet": {
+                              "text": "public class ForumApplication {\n\n    public static void main(String[] args) {\n        SpringApplication.run(ForumApplication.class, args);\n    }\n\n    @Bean\n    public JdbcTemplate jdbcTemplate(DataSource dataSource) {\n        DataSource loggingDataSource = ProxyDataSourceBuilder\n                .create(dataSource)\n                .logQueryBySlf4j(SLF4JLogLevel.DEBUG, \"com.example.insecureforum.jdbc\").build();\n        return new JdbcTemplate(loggingDataSource);\n    }\n\n}\n"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "E1403836ED13390CD14F4B4BFFB060CF"
+          },
+          "partialFingerprints": {
+            "fortify/path/v1": "src/main/java/com/example/insecureforum/forumapplication.java",
+            "fortify/category/v1": "Privacy Violation",
+            "fortify/line/v1": "23",
+            "fortify/sinkHash/v1": "1724AA167C4303DE8ABF53142FD32D2D"
+          },
+          "properties": {
+            "impact": 3,
+            "likelihood": 3,
+            "fortify-severity": "Critical",
+            "remediationSummary": "Disable/limit DEBUG SQL logging (or mask sensitive bind values) so credentials are not written to logs in cleartext."
+          }
+        },
+        {
+          "ruleId": "log-forging/EF891E2D559ED0AD52665CD652EDCD04",
+          "level": "warning",
+          "message": {
+            "text": "Attacker-controlled request parameters flow unsanitized into SQL query log output, enabling log entry injection",
+            "markdown": "Attacker-controlled request parameters flow unsanitized into SQL query log output, enabling log entry injection"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/example/insecureforum/ForumApplication.java"
+                },
+                "region": {
+                  "startLine": 23,
+                  "endLine": 23,
+                  "snippet": {
+                    "text": "                .logQueryBySlf4j(SLF4JLogLevel.DEBUG, \"com.example.insecureforum.jdbc\").build();"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 13,
+                  "endLine": 28,
+                  "snippet": {
+                    "text": "public class ForumApplication {\n\n    public static void main(String[] args) {\n        SpringApplication.run(ForumApplication.class, args);\n    }\n\n    @Bean\n    public JdbcTemplate jdbcTemplate(DataSource dataSource) {\n        DataSource loggingDataSource = ProxyDataSourceBuilder\n                .create(dataSource)\n                .logQueryBySlf4j(SLF4JLogLevel.DEBUG, \"com.example.insecureforum.jdbc\").build();\n        return new JdbcTemplate(loggingDataSource);\n    }\n\n}\n"
+                  }
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": {
+                          "text": "Issue (line 23)"
+                        },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "src/main/java/com/example/insecureforum/ForumApplication.java"
+                          },
+                          "region": {
+                            "startLine": 13,
+                            "endLine": 28,
+                            "snippet": {
+                              "text": "public class ForumApplication {\n\n    public static void main(String[] args) {\n        SpringApplication.run(ForumApplication.class, args);\n    }\n\n    @Bean\n    public JdbcTemplate jdbcTemplate(DataSource dataSource) {\n        DataSource loggingDataSource = ProxyDataSourceBuilder\n                .create(dataSource)\n                .logQueryBySlf4j(SLF4JLogLevel.DEBUG, \"com.example.insecureforum.jdbc\").build();\n        return new JdbcTemplate(loggingDataSource);\n    }\n\n}\n"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "EF891E2D559ED0AD52665CD652EDCD04"
+          },
+          "partialFingerprints": {
+            "fortify/path/v1": "src/main/java/com/example/insecureforum/forumapplication.java",
+            "fortify/category/v1": "Log Forging",
+            "fortify/line/v1": "23",
+            "fortify/sinkHash/v1": "1724AA167C4303DE8ABF53142FD32D2D"
+          },
+          "properties": {
+            "impact": 1.8,
+            "likelihood": 2.5,
+            "fortify-severity": "Medium",
+            "remediationSummary": "Neutralize CR/LF in logged SQL/parameters and use parameterized queries so attacker input cannot forge log entries."
+          }
+        },
+        {
+          "ruleId": "authentication-bad-practice/C80A51BB30CC5738A8F5D9049DDA35A0",
+          "level": "error",
+          "message": {
+            "text": "Authentication filter treats mere presence of a cookie named \"user\" as proof of login, without verifying any signed/session-bound value",
+            "markdown": "Authentication filter treats mere presence of a cookie named \"user\" as proof of login, without verifying any signed/session-bound value"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/example/insecureforum/web/AuthenticationFilter.java"
+                },
+                "region": {
+                  "startLine": 44,
+                  "endLine": 44,
+                  "snippet": {
+                    "text": "        boolean loggedIn = cookies != null && stream(cookies).anyMatch(c -> \"user\".equals(c.getName()));"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 34,
+                  "endLine": 54,
+                  "snippet": {
+                    "text": "    @Override\n    public void init(FilterConfig filterConfig) throws ServletException {\n    }\n\n    @Override\n    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {\n        HttpServletRequest httpReq = (HttpServletRequest)request;\n        HttpServletResponse httpResp = (HttpServletResponse)response;\n        String path = httpReq.getServletPath();\n        Cookie[] cookies = httpReq.getCookies();\n        boolean loggedIn = cookies != null && stream(cookies).anyMatch(c -> \"user\".equals(c.getName()));\n        httpReq.setAttribute(\"loggedIn\", loggedIn);\n        if(whitelist.test(path)) {\n            logger.debug(\"Path {} matches whitelist, allowing\", path);\n            chain.doFilter(request, response);\n        } else {\n            logger.debug(\"Path {} doesn't match whitelist\", path);\n            if(loggedIn) {\n                logger.debug(\"User logged in, proceeding\");\n                chain.doFilter(request, response);\n            } else {"
+                  }
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": {
+                          "text": "Issue (line 44)"
+                        },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "src/main/java/com/example/insecureforum/web/AuthenticationFilter.java"
+                          },
+                          "region": {
+                            "startLine": 34,
+                            "endLine": 54,
+                            "snippet": {
+                              "text": "    @Override\n    public void init(FilterConfig filterConfig) throws ServletException {\n    }\n\n    @Override\n    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {\n        HttpServletRequest httpReq = (HttpServletRequest)request;\n        HttpServletResponse httpResp = (HttpServletResponse)response;\n        String path = httpReq.getServletPath();\n        Cookie[] cookies = httpReq.getCookies();\n        boolean loggedIn = cookies != null && stream(cookies).anyMatch(c -> \"user\".equals(c.getName()));\n        httpReq.setAttribute(\"loggedIn\", loggedIn);\n        if(whitelist.test(path)) {\n            logger.debug(\"Path {} matches whitelist, allowing\", path);\n            chain.doFilter(request, response);\n        } else {\n            logger.debug(\"Path {} doesn't match whitelist\", path);\n            if(loggedIn) {\n                logger.debug(\"User logged in, proceeding\");\n                chain.doFilter(request, response);\n            } else {"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "C80A51BB30CC5738A8F5D9049DDA35A0"
+          },
+          "partialFingerprints": {
+            "fortify/path/v1": "src/main/java/com/example/insecureforum/web/authenticationfilter.java",
+            "fortify/category/v1": "Authentication Bad Practice",
+            "fortify/line/v1": "44",
+            "fortify/sinkHash/v1": "DA7E38507300DBC07800C5B819B34039"
+          },
+          "properties": {
+            "impact": 4.5,
+            "likelihood": 4.5,
+            "fortify-severity": "Critical",
+            "remediationSummary": "Replace presence-only cookie check with a signed/server-validated session so identity/login state cannot be forged."
+          }
+        },
+        {
+          "ruleId": "trust-boundary-violation/2EE405BB8A751E0AADB18CECFB8E46F1",
+          "level": "error",
+          "message": {
+            "text": "Message author is persisted from the forgeable, unsigned 'user' cookie, allowing posting under an arbitrary identity",
+            "markdown": "Message author is persisted from the forgeable, unsigned 'user' cookie, allowing posting under an arbitrary identity"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/example/insecureforum/web/MessageController.java"
+                },
+                "region": {
+                  "startLine": 41,
+                  "endLine": 41,
+                  "snippet": {
+                    "text": "        messageDao.post(user, subject, body);"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 31,
+                  "endLine": 46,
+                  "snippet": {
+                    "text": "\n    @RequestMapping(value = \"/messages/compose\", method = RequestMethod.GET)\n    public String compose() {\n        return \"messages/compose\";\n    }\n\n    @RequestMapping(value = \"/messages/compose\", method = RequestMethod.POST)\n    public RedirectView composeSubmit(@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user,\n                                      @RequestParam(\"subject\") String subject,\n                                      @RequestParam(\"body\") String body) {\n        messageDao.post(user, subject, body);\n        return new RedirectView(\"./list\");\n    }\n\n}\n"
+                  }
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": {
+                          "text": "Issue (line 41)"
+                        },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "src/main/java/com/example/insecureforum/web/MessageController.java"
+                          },
+                          "region": {
+                            "startLine": 31,
+                            "endLine": 46,
+                            "snippet": {
+                              "text": "\n    @RequestMapping(value = \"/messages/compose\", method = RequestMethod.GET)\n    public String compose() {\n        return \"messages/compose\";\n    }\n\n    @RequestMapping(value = \"/messages/compose\", method = RequestMethod.POST)\n    public RedirectView composeSubmit(@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user,\n                                      @RequestParam(\"subject\") String subject,\n                                      @RequestParam(\"body\") String body) {\n        messageDao.post(user, subject, body);\n        return new RedirectView(\"./list\");\n    }\n\n}\n"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "2EE405BB8A751E0AADB18CECFB8E46F1"
+          },
+          "partialFingerprints": {
+            "fortify/path/v1": "src/main/java/com/example/insecureforum/web/messagecontroller.java",
+            "fortify/category/v1": "Trust Boundary Violation",
+            "fortify/line/v1": "41",
+            "fortify/sinkHash/v1": "4DD7938A072A12CEF9CE821C4B12C889"
+          },
+          "properties": {
+            "impact": 3,
+            "likelihood": 4,
+            "fortify-severity": "Critical",
+            "remediationSummary": "Attribute posted messages to a server-verified identity, not to the raw, forgeable \"user\" cookie value."
+          }
+        },
+        {
+          "ruleId": "cross-site-request-forgery/E20111CE9585E627AE70D5804D598A00",
+          "level": "error",
+          "message": {
+            "text": "State-changing POST /messages/compose endpoint has no CSRF token, and relies only on an automatically-sent cookie for authentication",
+            "markdown": "State-changing POST /messages/compose endpoint has no CSRF token, and relies only on an automatically-sent cookie for authentication"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/example/insecureforum/web/MessageController.java"
+                },
+                "region": {
+                  "startLine": 38,
+                  "endLine": 38,
+                  "snippet": {
+                    "text": "    public RedirectView composeSubmit(@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user,"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 28,
+                  "endLine": 46,
+                  "snippet": {
+                    "text": "        model.addAttribute(\"msg\", messageDao.read(id));\n        return \"messages/read\";\n    }\n\n    @RequestMapping(value = \"/messages/compose\", method = RequestMethod.GET)\n    public String compose() {\n        return \"messages/compose\";\n    }\n\n    @RequestMapping(value = \"/messages/compose\", method = RequestMethod.POST)\n    public RedirectView composeSubmit(@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user,\n                                      @RequestParam(\"subject\") String subject,\n                                      @RequestParam(\"body\") String body) {\n        messageDao.post(user, subject, body);\n        return new RedirectView(\"./list\");\n    }\n\n}\n"
+                  }
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "message": {
+                          "text": "Issue (line 38)"
+                        },
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "src/main/java/com/example/insecureforum/web/MessageController.java"
+                          },
+                          "region": {
+                            "startLine": 28,
+                            "endLine": 46,
+                            "snippet": {
+                              "text": "        model.addAttribute(\"msg\", messageDao.read(id));\n        return \"messages/read\";\n    }\n\n    @RequestMapping(value = \"/messages/compose\", method = RequestMethod.GET)\n    public String compose() {\n        return \"messages/compose\";\n    }\n\n    @RequestMapping(value = \"/messages/compose\", method = RequestMethod.POST)\n    public RedirectView composeSubmit(@CookieValue(value = \"user\", defaultValue = \"anonymous\") String user,\n                                      @RequestParam(\"subject\") String subject,\n                                      @RequestParam(\"body\") String body) {\n        messageDao.post(user, subject, body);\n        return new RedirectView(\"./list\");\n    }\n\n}\n"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "fingerprints": {
+            "fortify/instance-id": "E20111CE9585E627AE70D5804D598A00"
+          },
+          "partialFingerprints": {
+            "fortify/path/v1": "src/main/java/com/example/insecureforum/web/messagecontroller.java",
+            "fortify/category/v1": "Cross-Site Request Forgery",
+            "fortify/line/v1": "38",
+            "fortify/sinkHash/v1": "784AAF6C60F18EF2777FCB920D20E875"
+          },
+          "properties": {
+            "impact": 2.5,
+            "likelihood": 3,
+            "fortify-severity": "Critical",
+            "remediationSummary": "Add a CSRF token to the compose form and validate it server-side (or enable Spring Security CSRF protection)."
           }
         }
       ]

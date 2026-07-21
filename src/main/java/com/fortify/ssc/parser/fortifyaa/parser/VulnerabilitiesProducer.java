@@ -1,5 +1,6 @@
 package com.fortify.ssc.parser.fortifyaa.parser;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.List;
@@ -166,6 +167,12 @@ public final class VulnerabilitiesProducer {
 		return sb.toString();
 	}
 
+	// FAA emits a 21-line context window (10 lines either side of the affected line),
+	// sized for FoD's Code tab. Rendered in full that crowds SSC's single
+	// vulnerabilityAbstract field, so rendering is trimmed to at most this many lines
+	// either side of the affected line.
+	private static final int MAX_SNIPPET_CONTEXT_LINES = 5;
+
 	// Render the code snippet as a monospaced <pre><code> block with right-aligned
 	// line numbers and the affected line in bold. Returns "" when there is no snippet.
 	private String getSnippetHtml(Result result) {
@@ -189,6 +196,19 @@ public final class VulnerabilitiesProducer {
 		}
 		Integer affectedLine = result.resolveLineNumber();
 		String[] lines = snippet.split("\n", -1);
+		// Trim to the window around the affected line (only when that line actually
+		// falls inside the snippet — without an anchor there is nothing to trim around).
+		if ( affectedLine != null ) {
+			int affectedIdx = affectedLine - snippetStartLine;
+			if ( affectedIdx >= 0 && affectedIdx < lines.length ) {
+				int from = Math.max(0, affectedIdx - MAX_SNIPPET_CONTEXT_LINES);
+				int to = Math.min(lines.length, affectedIdx + MAX_SNIPPET_CONTEXT_LINES + 1);
+				if ( from > 0 || to < lines.length ) {
+					lines = Arrays.copyOfRange(lines, from, to);
+					snippetStartLine = snippetStartLine + from;
+				}
+			}
+		}
 		int width = String.valueOf(snippetStartLine + lines.length - 1).length();
 		StringBuilder sb = new StringBuilder("<pre><code>");
 		for ( int i = 0; i < lines.length; i++ ) {

@@ -44,32 +44,10 @@ sourceSets {
 configurations.all {
     // Don't cache modules that may change (i.e. snapshots)
 	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-
-	// CVE-2024-47554: commons-io before 2.14.0 (pinned to 2.13.0 by the
-	// fortify-ssc-parser-util BOM) has an uncontrolled-resource-consumption flaw
-	// in XmlStreamReader. Force a fixed version over the BOM constraint.
-	resolutionStrategy.force 'commons-io:commons-io:2.22.0'
-
-	// CVE-2025-48924: commons-lang3 before 3.18.0 (pinned to 3.13.0 by the
-	// fortify-ssc-parser-util BOM) has an uncontrolled-recursion flaw in
-	// ClassUtils.getClass. Force a fixed version over the BOM constraint.
-	resolutionStrategy.force 'org.apache.commons:commons-lang3:3.20.0'
-
-	// GHSA-72hv-8253-57qq: jackson-core async parser bypasses maxNumberLength.
-	// Pinned to 2.15.2 by the fortify-ssc-parser-util / jackson BOM. Force all
-	// jackson modules together (they must share a version) to a fixed release.
-	// Note: jackson-annotations uses a shorter version scheme (2.22, not 2.22.0).
-	resolutionStrategy.force 'com.fasterxml.jackson.core:jackson-core:2.22.0',
-		'com.fasterxml.jackson.core:jackson-databind:2.22.0',
-		'com.fasterxml.jackson.core:jackson-annotations:2.22'
 }
 
 dependencies {
-    // SSC plugin API: the shared ssc-parser-plugin-helper pins an old 1.0.1.1; declare the
-    // latest public release explicitly so Gradle's conflict resolution picks it everywhere.
-    // The manifest's api-version is derived from whatever actually resolves here (see below).
-    implementation 'com.fortify.plugin:plugin-api:1.2.2320.0'
-    implementationExport(group: 'com.fortify.ssc.parser.util', name: 'fortify-ssc-parser-util-json', version:'3.0.2.RELEASE', changing: false) { transitive = true }
+    implementationExport(group: 'com.fortify.ssc.parser.util', name: 'fortify-ssc-parser-util-json', version:'3.0.3.RELEASE', changing: false) { transitive = true }
     implementationExport(group: 'org.commonmark', name: 'commonmark', version: '0.22.0') { transitive = true }
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
 }

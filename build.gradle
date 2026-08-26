@@ -69,7 +69,7 @@ dependencies {
     // latest public release explicitly so Gradle's conflict resolution picks it everywhere.
     // The manifest's api-version is derived from whatever actually resolves here (see below).
     implementation 'com.fortify.plugin:plugin-api:1.2.2320.0'
-    implementationExport(group: 'com.fortify.ssc.parser.util', name: 'fortify-ssc-parser-util-json', version:'1.7.1.RELEASE', changing: false) { transitive = true }
+    implementationExport(group: 'com.fortify.ssc.parser.util', name: 'fortify-ssc-parser-util-json', version:'3.0.2.RELEASE', changing: false) { transitive = true }
     implementationExport(group: 'org.commonmark', name: 'commonmark', version: '0.22.0') { transitive = true }
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
 }

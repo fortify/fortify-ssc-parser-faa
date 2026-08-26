@@ -4,13 +4,17 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fortify.plugin.api.ScanData;
+import com.fortify.plugin.api.ScanEntry;
 import com.fortify.plugin.api.ScanParsingException;
 import com.fortify.plugin.api.VulnerabilityHandler;
 import com.fortify.ssc.parser.fortifyaa.domain.Result;
 import com.fortify.ssc.parser.fortifyaa.domain.RunData;
 import com.fortify.util.io.Region;
+import com.fortify.util.json.DefaultObjectMapperFactory;
 import com.fortify.util.json.ExtendedJsonParser;
+import com.fortify.util.ssc.parser.json.ScanDataStreamingJsonParser;
 
 /**
  * This class parses a SARIF JSON input document to generate Fortify vulnerabilities.
@@ -40,6 +44,7 @@ import com.fortify.util.json.ExtendedJsonParser;
  */
 public final class VulnerabilitiesParser {
 	private final ScanData scanData;
+	private final ScanEntry scanEntry;
 	private final VulnerabilitiesProducer vulnerabilitiesProducer;
 	
 	/**
@@ -48,8 +53,9 @@ public final class VulnerabilitiesParser {
 	 * @param scanData
 	 * @param vulnerabilityHandler
 	 */
-	public VulnerabilitiesParser(final ScanData scanData, final VulnerabilityHandler vulnerabilityHandler) {
+	public VulnerabilitiesParser(final ScanData scanData, final ScanEntry scanEntry, final VulnerabilityHandler vulnerabilityHandler) {
 		this.scanData = scanData;
+		this.scanEntry = scanEntry;
 		this.vulnerabilitiesProducer = new VulnerabilitiesProducer(vulnerabilityHandler);
 	}
 	
@@ -59,9 +65,9 @@ public final class VulnerabilitiesParser {
 	 * @throws IOException
 	 */
 	public final void parse() throws ScanParsingException, IOException {
-		new SarifScanDataStreamingJsonParser()
+		new ScanDataStreamingJsonParser()
 			.handler("/runs/*", this::parseRun)
-			.parse(scanData);
+			.parse(scanData, scanEntry);
 	}
 
 	/**
@@ -78,7 +84,8 @@ public final class VulnerabilitiesParser {
 	 * @throws IOException
 	 */
 	private final void parseRun(ExtendedJsonParser jsonParser) throws IOException {
-		RunData runData = RunData.parseRunData(jsonParser);
+		ObjectMapper objectMapper = DefaultObjectMapperFactory.getDefaultObjectMapper();
+		RunData runData = RunData.parseRunData(jsonParser, scanData, scanEntry, objectMapper);
 		parseResults(runData);
 	}
 	
@@ -96,9 +103,9 @@ public final class VulnerabilitiesParser {
 	 * @throws IOException
 	 */
 	private final void parseResults(final RunData runData) throws IOException {
-		new SarifScanDataStreamingJsonParser()
+		new ScanDataStreamingJsonParser()
 			.expectedStartTokens(JsonToken.START_ARRAY)
 			.handler("/*", Result.class, result->vulnerabilitiesProducer.produceVulnerability(runData, result))
-			.parse(scanData, runData.getResultsRegion());
+			.parse(scanData, scanEntry, runData.getResultsRegion());
 	}
 }

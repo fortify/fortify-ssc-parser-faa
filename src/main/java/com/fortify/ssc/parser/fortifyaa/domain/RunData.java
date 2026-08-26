@@ -25,15 +25,18 @@
 package com.fortify.ssc.parser.fortifyaa.domain;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fortify.plugin.api.ScanData;
+import com.fortify.plugin.api.ScanEntry;
+import com.fortify.util.cache.CachedObject;
+import com.fortify.util.cache.CachedObjectArrayList;
 import com.fortify.util.io.Region;
 import com.fortify.util.json.ExtendedJsonParser;
 import com.fortify.util.json.StreamingJsonParser;
@@ -50,28 +53,29 @@ import lombok.Getter;
 public final class RunData {
     private static final Logger LOG = LoggerFactory.getLogger(RunData.class);
 	private final Map<String, ArtifactLocation> originalUriBaseIds;
-	private final List<Artifact> artifactsByIndex;
+	private final CachedObjectArrayList<Artifact> artifactsByIndex;
 	private final Map<String, Integer> ruleIndexesById;
 	private final Map<String, Integer> ruleIndexesByGuid;
-	private final List<ReportingDescriptor> rulesByIndex;
+	private final CachedObjectArrayList<ReportingDescriptor> rulesByIndex;
 	@Getter private Region resultsRegion = null;
 	@Getter private String toolName;
+	private final ScanData scanData;
+	private final ScanEntry scanEntry;
+	private final ObjectMapper objectMapper;
 	
 	/**
-	 * Private constructor; instances can be created through the {@link #parseRunData(ExtendedJsonParser)}
+	 * Private constructor; instances can be created through the {@link #parseRunData(ExtendedJsonParser, ScanData, ScanEntry, ObjectMapper)}
 	 * method.
 	 */
-    private RunData() {
-		// Auxiliary run metadata is held in memory. Rules (Fortify Categories) are a bounded
-		// set, and the artifacts list scales with the number of referenced files rather than
-		// the number of findings. The potentially large results array is never buffered here:
-		// only its Region is captured and it is streamed in a second pass (see
-		// VulnerabilitiesParser#parseResults), so only this bounded metadata lives on the heap.
+    private RunData(final ScanData scanData, final ScanEntry scanEntry, final ObjectMapper objectMapper) {
 		this.originalUriBaseIds = new HashMap<>();
-		this.artifactsByIndex = new ArrayList<>();
+		this.scanData = scanData;
+		this.scanEntry = scanEntry;
+		this.objectMapper = objectMapper;
+		this.artifactsByIndex = new CachedObjectArrayList<>();
 		this.ruleIndexesById = new HashMap<>();
 		this.ruleIndexesByGuid = new HashMap<>();
-		this.rulesByIndex = new ArrayList<>();
+		this.rulesByIndex = new CachedObjectArrayList<>();
 	}
 
 	/**
@@ -82,12 +86,14 @@ public final class RunData {
 	 * @return {@link RunData} instance
 	 * @throws IOException
 	 */
-	public static final RunData parseRunData(final ExtendedJsonParser jsonParser) throws IOException {
-		RunData runData = new RunData();
+	public static final RunData parseRunData(final ExtendedJsonParser jsonParser,
+			final ScanData scanData, final ScanEntry scanEntry,
+			final ObjectMapper objectMapper) throws IOException {
+		RunData runData = new RunData(scanData, scanEntry, objectMapper);
 		new StreamingJsonParser()
 			.handler("/originalUriBaseIds/*", runData::addOriginalUriBaseId)
-			.handler("/artifacts/*", Artifact.class, runData::addArtifact)
-			.handler("/tool/driver/rules/*", ReportingDescriptor.class, runData::addRule)
+			.handler("/artifacts/*", runData::addArtifactWithRegion)
+			.handler("/tool/driver/rules/*", runData::addRuleWithRegion)
 			.handler("/tool/driver/name", String.class, runData::setToolName)
 			.handler("/results", runData::setResultsRegion)
 			.parseObjectProperties(jsonParser, "/");
@@ -97,16 +103,18 @@ public final class RunData {
 	private final void addOriginalUriBaseId(ExtendedJsonParser jp) throws IOException {
 		originalUriBaseIds.put(jp.getCurrentName(), jp.readValueAs(ArtifactLocation.class));
 	}
-	
-	private final void addArtifact(Artifact artifact) {
-		artifactsByIndex.add(artifact);
+
+	private void addArtifactWithRegion(ExtendedJsonParser jp) throws IOException {
+		artifactsByIndex.add(CachedObject.parse(jp, Artifact.class, scanData, scanEntry, objectMapper));
 	}
 
-	private final void addRule(ReportingDescriptor reportingDescriptor) {
-		rulesByIndex.add(reportingDescriptor);
-		int index = rulesByIndex.size()-1;
-		addRuleIndex(ruleIndexesById, reportingDescriptor.getId(), index);
-		addRuleIndex(ruleIndexesByGuid, reportingDescriptor.getGuid(), index);
+	private void addRuleWithRegion(ExtendedJsonParser jp) throws IOException {
+		CachedObject<ReportingDescriptor> cached = CachedObject.parse(jp, ReportingDescriptor.class, scanData, scanEntry, objectMapper);
+		rulesByIndex.add(cached);
+		int index = rulesByIndex.size() - 1;
+		ReportingDescriptor rule = cached.getOrReload();
+		addRuleIndex(ruleIndexesById, rule.getId(), index);
+		addRuleIndex(ruleIndexesByGuid, rule.getGuid(), index);
 	}
 	
 	private final void addRuleIndex(Map<String,Integer> map, String key, int index) {
@@ -128,12 +136,12 @@ public final class RunData {
 	}
 	
 	public final Artifact getArtifactByIndex(Integer index) {
-		if ( index==null || artifactsByIndex==null || artifactsByIndex.isEmpty() ) { return null; }
-        if ( index<0 || index>=artifactsByIndex.size() ) {
-            LOG.warn("SARIF input error: Ignoring non-existing artifact index "+index);
-            return null;
-         }
-         return artifactsByIndex.get(index);
+		if ( index==null || artifactsByIndex.isEmpty() ) { return null; }
+		if ( index<0 || index>=artifactsByIndex.size() ) {
+			LOG.warn("SARIF input error: Ignoring non-existing artifact index "+index);
+			return null;
+		}
+		return artifactsByIndex.getCachedObject(index);
 	}
 	
 	public final ReportingDescriptor getRuleById(String id) {
@@ -145,11 +153,11 @@ public final class RunData {
 	}
 	
 	public final ReportingDescriptor getRuleByIndex(Integer index) {
-	    if ( index==null || rulesByIndex==null || rulesByIndex.isEmpty() ) { return null; }
-	    if ( index<0 || index>=rulesByIndex.size() ) {
-	       LOG.warn("SARIF input error: Ignoring non-existing rule index "+index);
-	       return null;
-	    }
-		return rulesByIndex.get(index);
+		if ( index==null || rulesByIndex.isEmpty() ) { return null; }
+		if ( index<0 || index>=rulesByIndex.size() ) {
+			LOG.warn("SARIF input error: Ignoring non-existing rule index "+index);
+			return null;
+		}
+		return rulesByIndex.getCachedObject(index);
 	}
 }

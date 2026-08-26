@@ -7,7 +7,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fortify.plugin.api.ScanBuilder;
 import com.fortify.plugin.api.ScanData;
+import com.fortify.plugin.api.ScanEntry;
 import com.fortify.plugin.api.ScanParsingException;
+import com.fortify.util.ssc.parser.json.ScanDataStreamingJsonParser;
 
 /**
  * This class parses the SARIF JSON to set the various {@link ScanBuilder}
@@ -16,6 +18,7 @@ import com.fortify.plugin.api.ScanParsingException;
 public class ScanParser {
 	public static final String MSG_UNSUPPORTED_INPUT_FILE_VERSION = "Unsupported input file version";
 	private final ScanData scanData;
+	private final ScanEntry scanEntry;
     private final ScanBuilder scanBuilder;
     private String version;
     private int numFiles = 0;
@@ -23,13 +26,14 @@ public class ScanParser {
     private String agentVersion;
     private Integer elapsedSeconds;
     
-	public ScanParser(final ScanData scanData, final ScanBuilder scanBuilder) {
+	public ScanParser(final ScanData scanData, final ScanEntry scanEntry, final ScanBuilder scanBuilder) {
 		this.scanData = scanData;
+		this.scanEntry = scanEntry;
 		this.scanBuilder = scanBuilder;
 	}
 	
 	public final void parse() throws ScanParsingException, IOException {
-		new SarifScanDataStreamingJsonParser()
+		new ScanDataStreamingJsonParser()
 			.handler("/version", jp -> version=jp.getValueAsString())
 			.handler("/runs/*/invocations/*/endTimeUtc", jp -> scanBuilder.setScanDate(jp.readValueAs(Date.class)))
 			.handler("/runs/*/invocations/*/machine", jp -> scanBuilder.setHostName(jp.getValueAsString()))
@@ -39,7 +43,7 @@ public class ScanParser {
 			.handler("/runs/*/automationDetails/guid", jp -> scanBuilder.setBuildId(jp.getValueAsString()))
 			.handler("/runs/*/automationDetails/id", jp -> scanBuilder.setScanLabel(jp.getValueAsString()))
 			.handler("/runs/*/artifacts", jp -> numFiles+=jp.countArrayEntries())
-			.parse(scanData);
+			.parse(scanData, scanEntry);
 		
 		if ( !"2.1.0".equals(version) ) {
 			throw new ScanParsingException(MSG_UNSUPPORTED_INPUT_FILE_VERSION+": "+version);

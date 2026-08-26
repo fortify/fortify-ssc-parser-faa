@@ -22,12 +22,12 @@ import com.fortify.ssc.parser.fortifyaa.domain.ReportingDescriptor;
 import com.fortify.ssc.parser.fortifyaa.domain.Result;
 import com.fortify.ssc.parser.fortifyaa.domain.RunData;
 import com.fortify.ssc.parser.fortifyaa.util.MarkdownUtil;
-import com.fortify.util.ssc.parser.EngineTypeHelper;
 import com.fortify.util.ssc.parser.HandleDuplicateIdVulnerabilityHandler;
+import com.fortify.util.ssc.parser.PluginXmlHelper;
 
 public final class VulnerabilitiesProducer {
 	private static final Logger LOG = LoggerFactory.getLogger(VulnerabilitiesProducer.class);
-	private static final String ENGINE_TYPE = EngineTypeHelper.getEngineType();
+
 	private final VulnerabilityHandler vulnerabilityHandler;
 	
 	/**
@@ -68,7 +68,7 @@ public final class VulnerabilitiesProducer {
 			StaticVulnerabilityBuilder vb = vulnerabilityHandler.startStaticVulnerability(getInstanceId(runData, result));
 			
 			// Set meta-data
-			vb.setEngineType(ENGINE_TYPE);
+			vb.setEngineType(PluginXmlHelper.getPluginXmlDescriptor().getEngineType());
 			vb.setKingdom(getKingdom(runData, result));
 			vb.setAnalyzer(getAnalyzer(runData, result));
 			vb.setCategory(getCategory(runData, result));

@@ -60,17 +60,17 @@ class FortifyAAParserPluginTest {
 
 	/** Backs a {@link ScanData} with a fixed classpath resource. */
 	private final ScanData getScanData(String fileName) {
-		return getScanData(() -> ClassLoader.getSystemResourceAsStream(fileName));
+		return getScanData(fileName, () -> ClassLoader.getSystemResourceAsStream(fileName));
 	}
 
 	/** Backs a {@link ScanData} with an in-memory document. */
 	private final ScanData getScanData(String content, boolean inline) {
-		return getScanData(() -> new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
+		return getScanData("inline.json", () -> new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
 	}
 
 	private interface InputStreamSupplier { InputStream get() throws IOException; }
 
-	private final ScanData getScanData(InputStreamSupplier supplier) {
+	private final ScanData getScanData(String entryName, InputStreamSupplier supplier) {
 		return new ScanData() {
 
 			@Override
@@ -80,7 +80,7 @@ class FortifyAAParserPluginTest {
 
 			@Override
 			public List<ScanEntry> getScanEntries() {
-				return null;
+				return Arrays.asList((ScanEntry) () -> entryName);
 			}
 
 			@Override

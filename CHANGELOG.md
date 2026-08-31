@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/fortify/fortify-ssc-parser-faa/compare/v1.1.0...v1.1.1) (2026-08-26)
+
+
+### Bug Fixes
+
+* Remove dependencies that are no longer necessary, significantly decreasing plugin jar size ([83e35d4](https://github.com/fortify/fortify-ssc-parser-faa/commit/83e35d4fb4963138b22ff38beb0f8fa8e43ad068))
+* Upgrade dependencies ([83e35d4](https://github.com/fortify/fortify-ssc-parser-faa/commit/83e35d4fb4963138b22ff38beb0f8fa8e43ad068))
+
 ## [1.1.0](https://github.com/fortify/fortify-ssc-parser-faa/compare/v1.0.1...v1.1.0) (2026-07-21)
 
 
